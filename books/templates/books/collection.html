@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %} Our Books {% endblock %}
+
+{% block header %}<h1>Our Books</h1>{% endblock %}
+
+{% block content %}
+
+  {% for book in list_books %}
+  <p><a href="{{book}}">{{book}}</a></p>
+  {% endfor %}
+{% endblock %}

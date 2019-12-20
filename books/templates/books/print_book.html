@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %} {{id_book}} {% endblock %}
+
+{% block header %}<h1>{{id_book}}</h1>{% endblock %}
+
+{% block content %}
+<!--    <script type="text/javascript">
+    	function getClickedToken(obj) {
+        alert(obj.getAttribute("token"));
+        }
+    </script>-->
+
+    <script type="text/javascript">
+    	function getClickedToken(obj) {
+        let clickedToken = obj.getAttribute("token");
+        document.getElementById("clickedToken").innerHTML = clickedToken;
+        document.getElementById(clickedToken).scrollIntoView();
+        }
+    </script>
+
+
+<!-- right div -->
+
+    <div class="right-sidebar">
+
+        <p id="clickedToken">test</p>
+        <table>
+            <tr>
+                <td> Char</td>
+                <td> Freq</td>
+                <td> Rank</td>
+            </tr>
+            {% for char, freq in freqs %}
+            <tr>
+                <td id="{{char}}">{{ char }}</td>
+                <td>{{ freq }}</td>
+                <td>{{ forloop.counter0 }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+
+
+<!--main (left) div-->
+    <div class="main-wrapper" >
+        {% for token, list_line in zip_list %}
+        {% if token == '@$$@' %}
+        <br>
+        {% else %}
+        <p class="tooltip" onclick="getClickedToken(this)" token="{{token}}">{{token}}
+            <span class="tooltiptext">
+                <span class="tt-hanzi">{{list_line.0}} [{{list_line.1}}]</span>
+                <br>
+                <span class="tt-fayin">{{list_line.2}}</span>
+                <br>
+                {% for def in list_line.3 %}
+                <br>
+                <span class="tt-def">- {{def}}</span>
+                {% endfor %}
+            </span>
+        </p>
+        {% endif %}
+        {% endfor %}
+
+    </div>
+
+<!--    <script type="text/javascript">
+
+    	function someFunction(obj) {
+        alert(obj.className);
+}
+
+    </script>-->
+
+<!--  <p class="chinese-text">{{txt}}</p>-->
+
+
+
+{% endblock %}

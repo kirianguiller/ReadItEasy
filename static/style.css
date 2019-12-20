@@ -1,0 +1,335 @@
+html {
+  font-family: "Noto Sans", "Noto Sans CJK SC", sans-serif;
+  background: #eee;
+/*  padding: 1rem;*/
+}
+
+body {
+  /*max-width: 960px;*/
+/*  margin: 0 auto;*/
+  color-background: #EEEEEE;
+  color:#444;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: serif;
+  margin: 1rem 0;
+}
+
+a {
+  color: #444;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid lightgray;
+}
+
+.nav-bar {
+    top: 0;
+    left: 0;
+    width: 100%;
+    position: fixed;
+    z-index: 5050;
+    background-color:#fafafb;
+/*    transition: box-shadow cubic-bezier(.165, .84, .44, 1) .25s;*/
+    height: 60px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    box-shadow: 0 1px 0 rgba(12,13,14,0.1),0 1px 6px rgba(60,65,70,0.1);
+/*    font-family: Arial,"Helvetica Neue",Helvetica,sans-serif;*/
+/*    border-top: 3px solid #f48024;*/
+}
+
+.nav-link{
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+
+nav h1 {
+  flex: auto;
+  margin: 0;
+}
+
+nav h1 a {
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+}
+
+nav ul  {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li a, nav ul li span, header .action {
+  display: block;
+  padding: 0.5rem;
+}
+
+.content {
+  padding: 0 1rem 1rem;
+}
+
+.chinese-text {
+  font-size: 24px;
+}
+
+
+.content:last-child {
+  margin-bottom: 0;
+}
+
+.content form {
+  margin: 1em 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.content label {
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+.content input, .content textarea {
+  margin-bottom: 1em;
+}
+
+.content textarea {
+  min-height: 12em;
+  resize: vertical;
+}
+
+input.danger {
+  color: #cc2f2e;
+}
+
+input[type=submit] {
+  align-self: start;
+  min-width: 10em;
+}
+
+.right-sidebar{
+    /*width: 100%;*/
+    /*max-width: 50%;*/
+    width: 40%;
+    height: 100%;
+    position: fixed;
+    height: calc(100vh - 60px);
+    top: 60px;
+    right: 0px;
+    float: right;
+    float: right;
+    padding: 0px;
+    border-left:#black 2px solid;
+/*    background:#fafafb;*/
+    overflow-y: auto;
+    scrollbar-color: rgba(0,0,0,0.2) transparent;
+    scrollbar-width: thin;
+    border: 1px solid #d6d9dc;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 1px;
+    border-right-width:
+
+    font-size: 30px;
+
+
+}
+
+
+.main-wrapper{
+    width: 55%;
+    font-size: 0px;
+    style=margin-left: 1em;
+    float: left;
+}
+
+.tooltip {
+  font-size: 30px;
+  margin-top: 5px;
+  position: relative;
+  display: inline-block;
+  style=margin-block-start: 0em;
+  margin-block-end: 0em;
+  /*border-bottom: 0px dotted black;*/
+
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  position: absolute;
+  display: inline-block;
+  font-size: 0px;
+  width: 140px;
+/*  background-color: #555;*/
+  background-color:#FFFFCE;
+  color: #000;
+  text-align: center;
+  border-radius: 5px;
+  border-color: red;
+  border: 1px solid black;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  padding: 5px 10px 10px 10px;
+  z-index: 1;
+  top: 135%;
+  left: 50%;
+  margin-left: -80px;
+}
+
+.tooltip:hover {
+  background-color: #ebca71;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+/*.tooltiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #555 transparent;
+}*/
+
+
+.tt-hanzi {
+  font-size:26px;
+  font-weight:500;
+
+}
+
+.tt-fayin {
+  font-size: 18px;
+  font-weight:600;
+}
+
+.tt-def {
+  font-size:16px;
+  font-weight:500;
+/*  float: left*/
+}
+
+
+/*.tooltip {
+  font-size: 30px;
+  position: relative;
+  display: inline-block;
+  style=margin-block-start: 1em;
+  margin-block-end: 0em;
+  *//*border-bottom: 0px dotted black;*//*
+
+}
+
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+
+  *//* Position the tooltip *//*
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px; *//* Use half of the width (120/2 = 60), to center the tooltip *//*
+}
+
+
+.tooltip:hover {
+  background-color: green;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}*/
+
+
+/*h1 {
+	color : red;
+	text-align: center;
+
+}
+
+h2 {
+    color : green;
+    text-align: center;
+}
+
+h3 {
+    color : brown;
+}
+
+.basic-nav {
+  text-align: center;
+  background: white;
+  margin: 20px 0;
+  padding: 10px;
+}
+
+.basic-nav-text {
+  text-decoration: none;
+  background: #333;
+  border-radius: 5px;
+  color: white;
+  padding: 3px 8px;
+  margin: 10px
+}
+
+
+.processed_text{
+    font-size: 30px;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+
+}
+
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+
+  *//* Position the tooltip *//*
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px; *//* Use half of the width (120/2 = 60), to center the tooltip *//*
+}
+
+
+.tooltip:hover {
+  background-color: green;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}*/
+
+
+

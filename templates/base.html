@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %} - ReadItEasy</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+</head>
+
+<body>
+    <div>
+        <nav class="nav-bar">
+          <h1><a href="/">ReadItEasy</a></h1>
+            <ul>
+                <li><a class="nav-link" href="/books/collection">Books</a>
+                {% if user.is_authenticated %}
+                <li><a class="nav-link" href="/logout">Log Out</a>
+                <li><a class="nav-link" href="/profile">Profile</a>
+                {% else %}
+                <li><a class="nav-link" href="/register">Register</a>
+                <li><a class="nav-link" href="/login">Log In</a>
+                {% endif %}
+            </ul>
+        </nav>
+        <!--<nav class="basic-nav">
+            <a class="basic-nav-text" href="/" rel="nofollow">home</a>
+
+            {% if user.is_authenticated %}
+            <a class="basic-nav-text" href="/profile" rel="nofollow">profile</a>
+            <a class="basic-nav-text" href="/logout" rel="nofollow">logout</a>
+            {% else %}
+            <a class="basic-nav-text" href="/login" rel="nofollow">log in</a>
+            <a class="basic-nav-text" href="/register" rel="nofollow">register</a>
+            {% endif %}
+        </nav>-->
+    </div>
+    <section class="content">
+        <header>{% block header %}{% endblock %}
+        </header>
+        {% block content %}{% endblock %}
+    </section>
+</body>
+</html>

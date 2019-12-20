@@ -1,0 +1,309 @@
+html {
+  font-family: "Noto Sans", "Noto Sans CJK SC", sans-serif;
+  background: #eee;
+  padding: 1rem;
+}
+
+body {
+  max-width: 960px;
+  margin: 0 auto;
+  background: white;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: serif;
+  color: #377ba8;
+  margin: 1rem 0;
+}
+
+a {
+  color: #377ba8;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid lightgray;
+}
+
+nav {
+  background: lightgray;
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+}
+
+nav h1 {
+  flex: auto;
+  margin: 0;
+}
+
+nav h1 a {
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+}
+
+nav ul  {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li a, nav ul li span, header .action {
+  display: block;
+  padding: 0.5rem;
+}
+
+.content {
+  padding: 0 1rem 1rem;
+}
+
+.chinese-text {
+  font-size: 24px;
+}
+
+.content > header {
+  border-bottom: 1px solid lightgray;
+  display: flex;
+  align-items: flex-end;
+}
+
+.content > header h1 {
+  flex: auto;
+  margin: 1rem 0 0.25rem 0;
+}
+
+.flash {
+  margin: 1em 0;
+  padding: 1em;
+  background: #cae6f6;
+  border: 1px solid #377ba8;
+}
+
+.post > header {
+  display: flex;
+  align-items: flex-end;
+  font-size: 0.85em;
+}
+
+.post > header > div:first-of-type {
+  flex: auto;
+}
+
+.post > header h1 {
+  font-size: 1.5em;
+  margin-bottom: 0;
+}
+
+.post .about {
+  color: slategray;
+  font-style: italic;
+}
+
+.post .body {
+  white-space: pre-line;
+}
+
+.content:last-child {
+  margin-bottom: 0;
+}
+
+.content form {
+  margin: 1em 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.content label {
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+.content input, .content textarea {
+  margin-bottom: 1em;
+}
+
+.content textarea {
+  min-height: 12em;
+  resize: vertical;
+}
+
+input.danger {
+  color: #cc2f2e;
+}
+
+input[type=submit] {
+  align-self: start;
+  min-width: 10em;
+}
+
+
+.processed_text{
+    font-size: 0px;
+    style=margin-left: 1em;
+
+}
+
+.tooltip {
+  font-size: 30px;
+  position: relative;
+  display: inline-block;
+  style=margin-block-start: 1em;
+  margin-block-end: 0em;
+  /*border-bottom: 0px dotted black;*/
+
+}
+
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  position: absolute;
+  font-size: 18px;
+  width: 140px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 1px;
+  padding: 10px 10px;
+  z-index: 1;
+  top: 135%;
+  left: 50%;
+  margin-left: -80px;
+}
+
+.tooltip:hover {
+  background-color: #ebca71;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.tooltiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #555 transparent;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+
+/*.tooltip {
+  font-size: 30px;
+  position: relative;
+  display: inline-block;
+  style=margin-block-start: 1em;
+  margin-block-end: 0em;
+  *//*border-bottom: 0px dotted black;*//*
+
+}
+
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+
+  *//* Position the tooltip *//*
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px; *//* Use half of the width (120/2 = 60), to center the tooltip *//*
+}
+
+
+.tooltip:hover {
+  background-color: green;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}*/
+
+
+/*h1 {
+	color : red;
+	text-align: center;
+
+}
+
+h2 {
+    color : green;
+    text-align: center;
+}
+
+h3 {
+    color : brown;
+}
+
+.basic-nav {
+  text-align: center;
+  background: white;
+  margin: 20px 0;
+  padding: 10px;
+}
+
+.basic-nav-text {
+  text-decoration: none;
+  background: #333;
+  border-radius: 5px;
+  color: white;
+  padding: 3px 8px;
+  margin: 10px
+}
+
+
+.processed_text{
+    font-size: 30px;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+
+}
+
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+
+  *//* Position the tooltip *//*
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px; *//* Use half of the width (120/2 = 60), to center the tooltip *//*
+}
+
+
+.tooltip:hover {
+  background-color: green;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}*/
+
+
+
