@@ -6,7 +6,6 @@ A rendre pour le 10 Janvier 2020
 This repository contains code for ReadItEasy, a web interface for helping users to read chinese (simplify and traditional characters).
 
 ## Requirements
-For extracting attention maps from text:
 * [Django](https://www.djangoproject.com/)
 * [NumPy](http://www.numpy.org/)
 
