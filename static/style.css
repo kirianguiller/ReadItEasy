@@ -96,7 +96,7 @@ nav ul  {
     right: 0px;
     float: right;
     float: right;
-    padding: 10px;
+    padding: 10px 10px 0px 10px;
     border-left:#black 2px solid;
 /*    background:#fafafb;*/
     overflow-y: auto;
