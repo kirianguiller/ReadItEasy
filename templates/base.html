@@ -10,20 +10,19 @@
 </head>
 
 <body>
-    <div>
-        <nav class="nav-bar">
-          <h1><a href="/">ReadItEasy</a></h1>
-            <ul>
-                <li><a class="nav-link" href="/books/collection">Books</a>
-                {% if user.is_authenticated %}
-                <li><a class="nav-link" href="/logout">Log Out</a>
-                <li><a class="nav-link" href="/profile">Profile</a>
-                {% else %}
-                <li><a class="nav-link" href="/register">Register</a>
-                <li><a class="nav-link" href="/login">Log In</a>
-                {% endif %}
-            </ul>
-        </nav>
+    <nav class="nav-bar">
+      <div><a href="/">ReadItEasy</a></div>
+        <ul>
+            <li><a class="nav-link" href="/books/collection">Books</a>
+            {% if user.is_authenticated %}
+            <li><a class="nav-link" href="/logout">Log Out</a>
+            <li><a class="nav-link" href="/profile">Profile</a>
+            {% else %}
+            <li><a class="nav-link" href="/register">Register</a>
+            <li><a class="nav-link" href="/login">Log In</a>
+            {% endif %}
+        </ul>
+    </nav>
         <!--<nav class="basic-nav">
             <a class="basic-nav-text" href="/" rel="nofollow">home</a>
 
@@ -35,7 +34,8 @@
             <a class="basic-nav-text" href="/register" rel="nofollow">register</a>
             {% endif %}
         </nav>-->
-    </div>
+
+
     <section class="content">
         <header>{% block header %}{% endblock %}
         </header>

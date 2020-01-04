@@ -1,0 +1,15 @@
+venv/
+.ipynb_checkpoints/
+notebook/
+tokenization_errors/
+web_scrapping/
+
+data/
+ReadItEasy/.git/
+ReadItEasy/.gitignore
+
+*.pyc
+__pycache__/
+
+instance/
+

@@ -88,12 +88,13 @@ def print_book(request, id_book):
             token = '@$$@'
         list_words.append(token)
         list_english_def.append(sim2cedict.get(token, ['-']*4))
-
+    size_corpus = sum(freqs.values())
     zip_list = zip(list_words, list_english_def)
     context = {
         "id_book": id_book,
         'zip_list': zip_list,
         "freqs": freqs.most_common(1000),
+        "size_corpus": size_corpus,
     }
     return render(request, "books/print_book.html", context)
 

@@ -47,18 +47,21 @@ hr {
   display: flex;
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 
-nav h1 {
+nav div {
   flex: auto;
   margin: 0;
+  padding: 0.25rem 0.5rem;
 }
 
-nav h1 a {
+nav div a {
   text-decoration: none;
-  padding: 0.25rem 0.5rem;
+  font-weight: 900;
+
 }
 
 nav ul  {
@@ -68,51 +71,18 @@ nav ul  {
   padding: 0;
 }
 
-nav ul li a, nav ul li span, header .action {
+/*nav ul li a, nav ul li span, header .action {
   display: block;
   padding: 0.5rem;
-}
+}*/
 
 .content {
   padding: 0 1rem 1rem;
+  margin-top: 70px;
 }
 
 .chinese-text {
   font-size: 24px;
-}
-
-
-.content:last-child {
-  margin-bottom: 0;
-}
-
-.content form {
-  margin: 1em 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.content label {
-  font-weight: bold;
-  margin-bottom: 0.5em;
-}
-
-.content input, .content textarea {
-  margin-bottom: 1em;
-}
-
-.content textarea {
-  min-height: 12em;
-  resize: vertical;
-}
-
-input.danger {
-  color: #cc2f2e;
-}
-
-input[type=submit] {
-  align-self: start;
-  min-width: 10em;
 }
 
 .right-sidebar{
@@ -126,7 +96,7 @@ input[type=submit] {
     right: 0px;
     float: right;
     float: right;
-    padding: 0px;
+    padding: 10px;
     border-left:#black 2px solid;
 /*    background:#fafafb;*/
     overflow-y: auto;
@@ -136,11 +106,20 @@ input[type=submit] {
     border-top-width: 0;
     border-bottom-width: 0;
     border-left-width: 1px;
-    border-right-width:
+    text-align: center;
 
-    font-size: 30px;
+    font-size: 22px;
+}
 
+#words {
+  border-collapse: collapse;
+  margin: 0 auto;
+/*  font-size: 22px;*/
+}
 
+#words td, #words th {
+  border: 1px solid #ddd;
+  padding: 8px;
 }
 
 
@@ -191,18 +170,6 @@ input[type=submit] {
   visibility: visible;
 }
 
-/*.tooltiptext::after {
-    content: "";
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: transparent transparent #555 transparent;
-}*/
-
-
 .tt-hanzi {
   font-size:26px;
   font-weight:500;
@@ -221,115 +188,38 @@ input[type=submit] {
 }
 
 
-/*.tooltip {
-  font-size: 30px;
-  position: relative;
-  display: inline-block;
-  style=margin-block-start: 1em;
-  margin-block-end: 0em;
-  *//*border-bottom: 0px dotted black;*//*
-
+.content:last-child {
+  margin-bottom: 0;
 }
 
-
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-
-
-  *//* Position the tooltip *//*
-  position: absolute;
-  z-index: 1;
-  bottom: 100%;
-  left: 50%;
-  margin-left: -60px; *//* Use half of the width (120/2 = 60), to center the tooltip *//*
+.content form {
+  margin: 1em 0;
+  display: flex;
+  flex-direction: column;
 }
 
-
-.tooltip:hover {
-  background-color: green;
+.content label {
+  font-weight: bold;
+  margin-bottom: 0.5em;
 }
 
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-}*/
-
-
-/*h1 {
-	color : red;
-	text-align: center;
-
+.content input, .content textarea {
+  margin-bottom: 1em;
 }
 
-h2 {
-    color : green;
-    text-align: center;
+.content textarea {
+  min-height: 12em;
+  resize: vertical;
 }
 
-h3 {
-    color : brown;
+input.danger {
+  color: #cc2f2e;
 }
 
-.basic-nav {
-  text-align: center;
-  background: white;
-  margin: 20px 0;
-  padding: 10px;
+input[type=submit] {
+  align-self: start;
+  min-width: 10em;
 }
-
-.basic-nav-text {
-  text-decoration: none;
-  background: #333;
-  border-radius: 5px;
-  color: white;
-  padding: 3px 8px;
-  margin: 10px
-}
-
-
-.processed_text{
-    font-size: 30px;
-}
-
-.tooltip {
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black;
-
-}
-
-
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-
-
-  *//* Position the tooltip *//*
-  position: absolute;
-  z-index: 1;
-  bottom: 100%;
-  left: 50%;
-  margin-left: -60px; *//* Use half of the width (120/2 = 60), to center the tooltip *//*
-}
-
-
-.tooltip:hover {
-  background-color: green;
-}
-
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-}*/
 
 
 

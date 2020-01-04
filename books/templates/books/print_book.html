@@ -22,20 +22,23 @@
 
 <!-- right div -->
 
-    <div class="right-sidebar">
+    <div class="right-sidebar"><!--
+        <div class="content-sidebar"></div>-->
 
         <p id="clickedToken">test</p>
-        <table>
+        <table id="words">
             <tr>
+                <td> Rank</td>
                 <td> Char</td>
                 <td> Freq</td>
-                <td> Rank</td>
+                <td> Rel F</td>
             </tr>
             {% for char, freq in freqs %}
             <tr>
+                <td>{{ forloop.counter0 }}</td>
                 <td id="{{char}}">{{ char }}</td>
                 <td>{{ freq }}</td>
-                <td>{{ forloop.counter0 }}</td>
+                <td>{% widthratio freq size_corpus 100 %}</td>
             </tr>
             {% endfor %}
         </table>
