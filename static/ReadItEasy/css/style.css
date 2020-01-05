@@ -81,57 +81,20 @@ nav ul  {
   margin-top: 70px;
 }
 
-.chinese-text {
-  font-size: 24px;
-}
-
-.right-sidebar{
-    /*width: 100%;*/
-    /*max-width: 50%;*/
-    width: 40%;
-    height: 100%;
-    position: fixed;
-    height: calc(100vh - 60px);
-    top: 60px;
-    right: 0px;
-    float: right;
-    float: right;
-    padding: 10px 10px 0px 10px;
-    border-left:#black 2px solid;
-/*    background:#fafafb;*/
-    overflow-y: auto;
-    scrollbar-color: rgba(0,0,0,0.2) transparent;
-    scrollbar-width: thin;
-    border: 1px solid #d6d9dc;
-    border-top-width: 0;
-    border-bottom-width: 0;
-    border-left-width: 1px;
-    text-align: center;
-
-    font-size: 22px;
-}
-
-#words {
-  border-collapse: collapse;
-  margin: 0 auto;
-/*  font-size: 22px;*/
-}
-
-#words td, #words th {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
 
 
-.main-wrapper{
+#left-div{
     width: 55%;
-    font-size: 0px;
     style=margin-left: 1em;
     float: left;
 }
 
+#book-content{
+    font-size: 0px;
+}
+
 .tooltip {
-  font-size: 30px;
+  font-size: 24px;
   margin-top: 5px;
   position: relative;
   display: inline-block;
@@ -171,7 +134,7 @@ nav ul  {
 }
 
 .tt-hanzi {
-  font-size:26px;
+  font-size:24px;
   font-weight:500;
 
 }
