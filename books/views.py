@@ -3,9 +3,10 @@ from .forms import formText
 from django.http import HttpResponse
 from collections import Counter
 import re
+import pickle
 
 # Create your views here.
-
+import time
 import jieba
 import os
 import numpy as np
@@ -27,20 +28,25 @@ def rmv_not_chinese(counter):
 
 
 def find_chapter_separator(txt):
-    count_jie = len(re.findall('第.{1,5}节', txt))
-    count_zhang = len(re.findall('第.{1,5}章', txt))
+    jie_sep = re.findall('第[一二三四五六七八九十百零0-9]{1,5}节[\n\\s\t]', txt)
+    zhang_sep = re.findall('第[一二三四五六七八九十百零0-9]{1,5}章[\n\\s\t]', txt)
+
+    jie_count = len(jie_sep)
+    zhang_count = len(zhang_sep)
+
     count = 0
 
-    if count_jie > count_zhang:
+    if jie_count > zhang_count:
         separator = "节"
-        count = count_jie
-    elif count_zhang > count_jie:
+        seps = jie_sep
+    elif zhang_count > jie_count:
         separator = '章'
-        count = count_zhang
-    elif (count_zhang == 0) & (count_jie == 0):
-        separator = "Not Found"
+        seps = zhang_sep
+    elif (zhang_count == 0) & (jie_count == 0):
+        separator = False
+        seps = []
 
-    return (separator, count)
+    return (separator, seps)
 
 path_books = "data/books/"
 path_books = os.path.abspath(path_books)
@@ -114,70 +120,97 @@ def get_user_text(request):
     })
 
 
-def print_book(request, id_book):
+def print_book(request, id_book, reader_chapter=1):
+    t1 = time.time()
+
+
     path_book = os.path.join(path_books, "{}.txt".format(id_book))
 
+    # create the cache folder for the book if doesn't exist yet
     path_book_cache = os.path.join(path_books_cache, id_book)
+    if not os.path.isdir(path_book_cache):
+        os.mkdir(path_book_cache)
+
+
+
+    # load all the book $$ Can improve a little speed here
     with open(path_book, 'r') as infile:
         full_txt = infile.read()
 
-    chapter_separator, _ = find_chapter_separator(full_txt)
+    # get info about chapter seperator
+    chapter_separator, list_seps = find_chapter_separator(full_txt)
+    chapters_number = len(list_seps)
+    if reader_chapter > chapters_number:
+        return redirect(print_book, id_book=id_book, reader_chapter=chapters_number)
 
-    txt = re.split('第.{1,5}' + chapter_separator ,full_txt)[1].strip()
-    tokens = jieba.cut(txt)
-    freqs = Counter(jieba.cut(full_txt))
-    freqs = rmv_not_chinese(freqs)
-    # txt = ' '.join(tokens)
-    txt = ''
+    # get chapter name and chapter text
+    chapter_name = list_seps[reader_chapter - 1]
+    chapter_txt = re.split('第[一二三四五六七八九十百零0-9]{1,5}'+chapter_separator+ '[\n\\s\t]' ,full_txt)[reader_chapter].strip()
+
+    # tokenize the chapter
+    chapter_tokens = jieba.cut(chapter_txt)
     list_words_meta = []
     list_words = []
-    for token in tokens:
+    for token in chapter_tokens:
         if token =='\n':
             token = '@$$@'
         list_words.append(token)
         list_words_meta.append(sim2cedict.get(token, ['-']*4))
+    zip_list = zip(list_words, list_words_meta)
 
-    # save the tokenized text and data in cache
-    path_tokenized_text_cache = os.path.join(path_book_cache, 'tokenized_text.txt')
-    with open(path_tokenized_text_cache, 'w') as outfile:
-        for word in list_words:
-            outfile.write(word + '\n')
-
-
-    # fetch hsk data from the book
-    hsk_counter = {}
-    for level in range(0, 7):
-        hsk_counter[level] = 0
-
-    for char, freq in freqs.items():
-        hsk_counter[word2hsk.get(char, 0)] += freq
-
-    hsk_counter['none'] = hsk_counter.pop(0)
-
-    # build and save the hsk distribution bar plot
-    values = list(hsk_counter.values())
-    labels = ["level {}".format(level) for level in hsk_counter.keys()]
-    plt.bar(range(len(hsk_counter)), values, align='center', alpha=0.9)
-    plt.xticks(range(len(hsk_counter)), labels)
+    # # save the tokenized text and data in cache
+    # path_tokenized_text_cache = os.path.join(path_book_cache, 'tokenized_text.txt')
+    # with open(path_tokenized_text_cache, 'w') as outfile:
+    #     for word in list_words:
+    #         outfile.write(word + '\n')
 
 
-    if not os.path.isdir(path_book_cache):
-        os.mkdir(path_book_cache)
-    path_barplot = os.path.join(path_book_cache, 'hsk_barplot.png')
-
-    rel_static_path = os.path.join('books', 'cache', id_book, 'hsk_barplot.png')
-    plt.savefig(path_barplot)
-    plt.clf()
+    # get statistics about the whole book
+    path_freqs_pickle = os.path.join(path_book_cache, 'freqs.pkl')
+    if os.path.isfile(path_freqs_pickle):
+        with open(path_freqs_pickle, 'rb') as f:
+            freqs = pickle.load(f)
+    else:
+        tokenized_full_text = jieba.cut(full_txt)
+        freqs = Counter(tokenized_full_text)
+        freqs = rmv_not_chinese(freqs)
+        with open(path_freqs_pickle, 'wb') as f:
+            pickle.dump(freqs, f, pickle.HIGHEST_PROTOCOL)
 
     size_corpus = sum(freqs.values())
-    zip_list = zip(list_words, list_words_meta)
+
+    # fetch hsk data from the book
+    path_barplot = os.path.join(path_book_cache, 'hsk_barplot.png')
+    if os.path.isfile(path_barplot):
+        pass
+    else:
+        hsk_counter = {}
+        for level in range(0, 7):
+            hsk_counter[level] = 0
+
+        for char, freq in freqs.items():
+            hsk_counter[word2hsk.get(char, 0)] += freq
+
+        hsk_counter['none'] = hsk_counter.pop(0)
+
+        # build and save the hsk distribution bar plot
+        values = list(hsk_counter.values())
+        labels = ["level {}".format(level) for level in hsk_counter.keys()]
+        plt.bar(range(len(hsk_counter)), values, align='center', alpha=0.9)
+        plt.xticks(range(len(hsk_counter)), labels)
+        plt.savefig(path_barplot)
+        plt.clf()
+
+    t2 = time.time()
+    print('D2', t2 - t1)
+
     context = {
         "id_book": id_book,
         'zip_list': zip_list,
         "freqs": freqs.most_common(1000),
         "size_corpus": size_corpus,
-        "hsk_counter": hsk_counter,
-        "rel_static_path":rel_static_path,
+        # "hsk_counter": hsk_counter,
+        "chapter_name": chapter_name,
     }
     return render(request, "books/print_book.html", context)
 

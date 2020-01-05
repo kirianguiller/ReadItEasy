@@ -11,7 +11,9 @@ ReadItEasy/.gitignore
 *.pyc
 __pycache__/
 
+.idea/
+**/__pycache__/
+
 instance/
 
-books/static/books/cache/
-
+**/cache/
