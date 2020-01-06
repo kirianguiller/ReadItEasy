@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} {{id_book}} {% endblock %}
+
+{% block extra_head%}
+    <link rel="stylesheet" type="text/css" href="{% static 'books/css/style.css' %}">
+    <script type="text/javascript">
+        function getClickedToken(obj) {
+        let clickedToken = obj.getAttribute("token");
+    <!-- document.getElementById("clickedToken").innerHTML = clickedToken;-->
+         document.getElementById(clickedToken).scrollIntoView();
+    }
+    </script>
+{% endblock %}
+
+<!--{% block header %}<h1>{{id_book}}</h1>{% endblock %}-->
+
+{% block content %}
+
+    <div id="right-div"><!--
+        <div class="content-sidebar"></div>-->
+        <div id="right-upper">
+<!--            {% with "books/cache/"|add:id_book|add:"/hsk_barplot.png" as path_hsk_barplot %}-->
+            <img src='{% static rel_path_barplot %}' alt="HSK Distribution Bar Plot">
+<!--            {% endwith %}-->
+
+            <!--<p id="clickedToken">test</p>-->
+
+
+            <!--<table id="table-hsk">
+                <tr>
+                    <td>Level</td>
+                    <td>Count</td>
+                    <td>Ratio</td>
+                </tr>
+                {% for level, count in hsk_counter.items %}
+                <tr>
+                    <td >{{ level }}</td>
+                    <td>{{ count }}</td>
+                    <td>{% widthratio count size_corpus 100 %}</td>
+                </tr>
+                {% endfor %}
+            </table>-->
+        </div>
+
+        <div id="right-lower">
+            <table id="table-words">
+                <tr>
+                    <td> Rank</td>
+                    <td> Char</td>
+                    <td> Freq</td>
+                    <td> Rel F</td>
+                </tr>
+                {% for char, freq in freqs %}
+                <tr>
+                    <td>{{ forloop.counter0 }}</td>
+                    <td id="{{char}}">{{ char }}</td>
+                    <td>{{ freq }}</td>
+                    <td>{% widthratio freq size_corpus 100 %}</td>
+                </tr>
+                {% endfor %}
+            </table>
+         </div>
+    </div>
+
+
+    <div id="left-div" >
+
+        <header><h1>{{id_book}}</h1></header>
+        <h2>{{chapter_name}}</h2>
+
+        <div id="book-content">
+            {% for token, list_line in zip_list %}
+            {% if token == '@$$@' %}
+            <br>
+            {% else %}
+            <p class="tooltip" onclick="getClickedToken(this)" token="{{token}}">{{token}}
+                <span class="tooltiptext">
+                    <span class="tt-hanzi">{{list_line.0}} [{{list_line.1}}]</span>
+                    <br>
+                    <span class="tt-fayin">{{list_line.2}}</span>
+                    <br>
+                    {% for def in list_line.3 %}
+                    <br>
+                    <span class="tt-def">- {{def}}</span>
+                    {% endfor %}
+                </span>
+            </p>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

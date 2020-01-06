@@ -3,7 +3,9 @@ from . import views
 
 urlpatterns = [
     path('', views.get_user_text),
-    path('books/collection', views.collection),
-    path('books/<id_book>/', views.print_book),
-    path('books/<id_book>/<int:reader_chapter>', views.print_book),
+    path('books/', views.show_languages),
+    path('books/<language>/', views.show_books),
+    # path('books/<id_book>/', views.show_chinese_book),
+    path('books/<language>/<id_book>/', views.show_chapter),
+    path('books/<language>/<id_book>/<int:reader_chapter>', views.show_chapter),
 ]

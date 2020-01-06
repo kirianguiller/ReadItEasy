@@ -5,6 +5,7 @@
 
 {% block extra_head%}
     <link rel="stylesheet" type="text/css" href="{% static 'books/css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'books/css/style_english.css' %}">
     <script type="text/javascript">
         function getClickedToken(obj) {
         let clickedToken = obj.getAttribute("token");
@@ -21,9 +22,9 @@
     <div id="right-div"><!--
         <div class="content-sidebar"></div>-->
         <div id="right-upper">
-            {% with "books/cache/"|add:id_book|add:"/hsk_barplot.png" as path_hsk_barplot %}
-            <img src='{% static path_hsk_barplot %}' alt="HSK Distribution Bar Plot">
-            {% endwith %}
+<!--            {% with "books/cache/"|add:id_book|add:"/hsk_barplot.png" as path_hsk_barplot %}-->
+            <img src='{% static rel_path_barplot %}' alt="HSK Distribution Bar Plot">
+<!--            {% endwith %}-->
 
             <!--<p id="clickedToken">test</p>-->
 
@@ -45,7 +46,7 @@
         </div>
 
         <div id="right-lower">
-            <table id="table-words">
+            <!--<table id="table-words">
                 <tr>
                     <td> Rank</td>
                     <td> Char</td>
@@ -60,7 +61,7 @@
                     <td>{% widthratio freq size_corpus 100 %}</td>
                 </tr>
                 {% endfor %}
-            </table>
+            </table>-->
          </div>
     </div>
 
@@ -68,27 +69,28 @@
     <div id="left-div" >
 
         <header><h1>{{id_book}}</h1></header>
-        <h2>{{chapter_name}}</h2>
+<!--        <h2>{{chapter_name}}</h2>-->
 
-        <div id="book-content">
-            {% for token, list_line in zip_list %}
-            {% if token == '@$$@' %}
-            <br>
-            {% else %}
-            <p class="tooltip" onclick="getClickedToken(this)" token="{{token}}">{{token}}
-                <span class="tooltiptext">
-                    <span class="tt-hanzi">{{list_line.0}} [{{list_line.1}}]</span>
-                    <br>
-                    <span class="tt-fayin">{{list_line.2}}</span>
-                    <br>
-                    {% for def in list_line.3 %}
-                    <br>
-                    <span class="tt-def">- {{def}}</span>
-                    {% endfor %}
-                </span>
-            </p>
-            {% endif %}
-            {% endfor %}
+        <div <!--id="book-content"-->>
+            <p class="english-paragraph">{{txt}}</p>
+<!--            {% for token, list_line in zip_list %}-->
+<!--            {% if token == '@$$@' %}-->
+<!--            <br>-->
+<!--            {% else %}-->
+<!--            <p class="tooltip" onclick="getClickedToken(this)" token="{{token}}">{{token}}-->
+<!--                <span class="tooltiptext">-->
+<!--                    <span class="tt-hanzi">{{list_line.0}} [{{list_line.1}}]</span>-->
+<!--                    <br>-->
+<!--                    <span class="tt-fayin">{{list_line.2}}</span>-->
+<!--                    <br>-->
+<!--                    {% for def in list_line.3 %}-->
+<!--                    <br>-->
+<!--                    <span class="tt-def">- {{def}}</span>-->
+<!--                    {% endfor %}-->
+<!--                </span>-->
+<!--            </p>-->
+<!--            {% endif %}-->
+<!--            {% endfor %}-->
         </div>
     </div>
 
