@@ -8,6 +8,7 @@ This repository contains code for ReadItEasy, a web interface for helping users 
 ## Requirements
 * [Django](https://www.djangoproject.com/)
 * [NumPy](http://www.numpy.org/)
+* [OpenCC](https://pypi.org/project/OpenCC/)
 
 ## Installing the Virtual Environnement
 `requirements.txt` contain the library you need to download for running the code.
