@@ -67,7 +67,7 @@ if not os.path.isdir(path_books_cache):
 
 zh2en = {}
 sim2cedict = {}
-with open(path_ce_dict, 'r') as f:
+with open(path_ce_dict, 'r', encoding='utf-8') as f:
     for line in f:
         line = line.rstrip('\n')
         zh_trad = line.split('\t')[0]
@@ -155,7 +155,7 @@ def show_chapter(request, language, id_book, reader_chapter=1):
 
 
 def mandarin_chapter(request, language, id_book, reader_chapter=1):
-c,vv r    t1 = time.time()
+    t1 = time.time()
     path_book = os.path.join(path_books, language, id_book + '.txt')
 
     # create the cache folder for the book if doesn't exist yet
