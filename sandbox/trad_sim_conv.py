@@ -1,12 +1,12 @@
 #-*- coding: utf8 -*-
-# Script destiné à la convertion du chinois traditionnel & simplifié utilisant "OpenCC"
+# Script for the conversion (traditionnal & simplified) using "OpenCC"
 
-# Il faut install la librairie Opencc par "pip install opencc-python-reimplemented==0.1.4"
-# Veillez à ne pas exécuter "pip install opencc" qui ne marche pas.
+# You need to install the module OpenCC by "pip install opencc-python-reimplemented==0.1.4"
+# Attention : do not use "pip install opencc" which doesn't work
 
 import opencc
 
-choice = input("Pour convertir le traditionnel en simplifié, tapez 't2s' et vice versa 's2t' : ")
-texte = input("Entrez votre texte à convertir : ")
+choice = input("To convert the traditional Chinese into the simplified, enter 't2s' ; and vice versa 's2t' : ")
+text = input("Enter the text you want to convert : ")
 tache = opencc.OpenCC(choice)
-print(tache.convert(texte))
+print(tache.convert(text))
