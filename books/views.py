@@ -85,7 +85,7 @@ with open(path_ce_dict, 'r', encoding='utf-8') as f:
 
 # extract hsk information
 word2hsk = {}
-with open(path_hsk_vocab, 'r') as f:
+with open(path_hsk_vocab, 'r', encoding='utf-8') as f:
     for n, line in enumerate(f):
         if n == 0:
             pass
