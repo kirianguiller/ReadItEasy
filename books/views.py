@@ -94,8 +94,8 @@ with open(path_hsk_vocab, 'r', encoding='utf-8') as f:
             word2hsk[word.rstrip('\n')] = int(hsk_level)
 
 
-def home(request):
-    return show_languages(request)
+def home_book(request):
+    return render(request, "books/home_book.html")
 
 
 def get_books():
