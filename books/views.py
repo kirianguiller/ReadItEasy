@@ -166,7 +166,7 @@ def mandarin_chapter(request, language, id_book, reader_chapter=1):
 
 
     # load all the book $$ Can improve a little speed here
-    with open(path_book, 'r') as infile:
+    with open(path_book, 'r', encoding='utf-8') as infile:
         full_txt = infile.read()
 
     # get info about chapter seperator
@@ -259,7 +259,7 @@ def english_chapter(request, language, id_book, reader_chapter):
         os.makedirs(path_book_cache)
 
     # load all the book $$ Can improve a little speed here
-    with open(path_book, 'r') as infile:
+    with open(path_book, 'r', encoding='utf-8') as infile:
         full_txt = infile.read()
 
     txt = full_txt[:10000]
