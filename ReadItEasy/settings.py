@@ -25,7 +25,7 @@ SECRET_KEY = '$&lr@bg-yt5xyl71a!b*@ulf51jz3r$2!kxpegi%zrt*4ag1h$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["readiteasy.com"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition

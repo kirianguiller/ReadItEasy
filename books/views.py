@@ -9,7 +9,6 @@ import pickle
 import time
 import jieba
 import os
-import numpy as np
 import matplotlib.pyplot as plt
 
 def get_chinese(context):
@@ -57,8 +56,10 @@ jieba.initialize()
 # path_ce_dict = os.path.abspath(path_ce_dict)
 path_ce_dict = os.path.join(BASE_DIR, 'data', 'dict', 'tab_cedict_ts.u8')
 
-path_hsk_vocab = "data/hsk_vocab/HSK1->6.csv"
-path_hsk_vocab = os.path.abspath(path_hsk_vocab)
+
+path_hsk_vocab = os.path.join(BASE_DIR, 'data', 'hsk_vocab', 'HSK1->6.csv')
+# path_hsk_vocab = "data/hsk_vocab/HSK1->6.csv"
+# path_hsk_vocab = os.path.abspath(path_hsk_vocab)
 path_books_app = os.path.dirname(os.path.abspath(__file__))
 path_books_cache = os.path.join(path_books_app, 'static', 'books', 'cache')
 
