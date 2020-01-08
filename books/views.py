@@ -61,7 +61,7 @@ path_hsk_vocab = os.path.join(BASE_DIR, 'data', 'hsk_vocab', 'HSK1->6.csv')
 # path_hsk_vocab = "data/hsk_vocab/HSK1->6.csv"
 # path_hsk_vocab = os.path.abspath(path_hsk_vocab)
 path_books_app = os.path.dirname(os.path.abspath(__file__))
-path_books_cache = os.path.join(BASE_DIR, 'cache', 'books')
+path_books_cache = os.path.join(BASE_DIR, 'ReadItEasy', 'static', 'cache', 'books')
 
 if not os.path.isdir(path_books_cache):
     os.makedirs(path_books_cache)
@@ -214,7 +214,7 @@ def mandarin_chapter(request, language, id_book, reader_chapter=1):
     # fetch hsk data from the book
     path_barplot = os.path.join(path_book_cache, 'hsk_barplot.png')
     print('PATH BARPLOT ',path_barplot )
-    rel_path_barplot = path_barplot.split('ReadItEasy/cache/')[-1]
+    rel_path_barplot = path_barplot.split('ReadItEasy/static/')[-1]
 
     print('rel_path_barplot :',rel_path_barplot)
     if os.path.isfile(path_barplot):
