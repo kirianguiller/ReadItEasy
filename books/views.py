@@ -249,7 +249,6 @@ def mandarin_chapter(request, language, id_book, reader_chapter=1):
         plt.savefig(path_barplot)
         plt.clf()
 
-    shutil.copy(path_barplot, '/home/wran/Downloads/test.png')
 
     t2 = time.time()
     print('D2', t2 - t1)
