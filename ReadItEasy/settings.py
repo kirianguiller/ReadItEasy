@@ -131,7 +131,7 @@ STATIC_URL = '/static/'
 
 
 STATICFILES_DIRS = (                    #added
-    os.path.join(BASE_DIR, "static"),   #added
+    os.path.join(BASE_DIR, "static"), #added
 )
 
 LOGIN_REDIRECT_URL = 'profile'

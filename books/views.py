@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from collections import Counter
 import re
 import pickle
-
+import shutil
 # Create your views here.
 import time
 import jieba
@@ -47,7 +47,13 @@ def find_chapter_separator(txt):
 
     return (separator, seps)
 
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+DJANGO_DEVELOPMENT = True
+if 'www/ReadItEasy' in BASE_DIR:
+    DJANGO_DEVELOPMENT = False
+
 
 # path_books = "data/books/"
 path_books = os.path.join(BASE_DIR, 'data', 'books')
@@ -61,10 +67,16 @@ path_hsk_vocab = os.path.join(BASE_DIR, 'data', 'hsk_vocab', 'HSK1->6.csv')
 # path_hsk_vocab = "data/hsk_vocab/HSK1->6.csv"
 # path_hsk_vocab = os.path.abspath(path_hsk_vocab)
 path_books_app = os.path.dirname(os.path.abspath(__file__))
-path_books_cache = os.path.join(path_books_app, 'static', 'books', 'cache')
+
+
+if DJANGO_DEVELOPMENT:
+    path_books_cache = os.path.join(path_books_app, 'static', 'books', 'cache')
+else:
+    path_books_cache = os.path.join(BASE_DIR, 'ReadItEasy', 'static', 'books', 'cache')
+
 
 if not os.path.isdir(path_books_cache):
-    os.mkdir(path_books_cache)
+    os.makedirs(path_books_cache)
 
 zh2en = {}
 sim2cedict = {}
@@ -94,8 +106,8 @@ with open(path_hsk_vocab, 'r', encoding='utf-8') as f:
             word2hsk[word.rstrip('\n')] = int(hsk_level)
 
 
-def home(request):
-    return show_languages(request)
+def home_book(request):
+    return render(request, "books/home_book.html")
 
 
 def get_books():
@@ -164,7 +176,6 @@ def mandarin_chapter(request, language, id_book, reader_chapter=1):
     if not os.path.isdir(path_book_cache):
         os.makedirs(path_book_cache)
 
-
     # load all the book $$ Can improve a little speed here
     with open(path_book, 'r', encoding='utf-8') as infile:
         full_txt = infile.read()
@@ -177,7 +188,8 @@ def mandarin_chapter(request, language, id_book, reader_chapter=1):
 
     # get chapter name and chapter text
     chapter_name = list_seps[reader_chapter - 1]
-    chapter_txt = re.split('第[一二三四五六七八九十百零0-9]{1,5}'+chapter_separator+ '[\n\\s\t]' ,full_txt)[reader_chapter].strip()
+    chapter_txt = re.split('第[一二三四五六七八九十百零0-9]{1,5}'+chapter_separator + '[\n\\s\t]',
+                           full_txt)[reader_chapter].strip()
 
     # tokenize the chapter
     chapter_tokens = jieba.cut(chapter_txt)
@@ -213,8 +225,10 @@ def mandarin_chapter(request, language, id_book, reader_chapter=1):
 
     # fetch hsk data from the book
     path_barplot = os.path.join(path_book_cache, 'hsk_barplot.png')
-    rel_path_barplot = path_barplot.split('books/static/')[-1]
-    print(path_barplot)
+    print('PATH BARPLOT ',path_barplot )
+    rel_path_barplot = path_barplot.split('/static/')[-1]
+    print('rel_path_barplot :',rel_path_barplot)
+
     if os.path.isfile(path_barplot):
         pass
     else:
@@ -234,6 +248,7 @@ def mandarin_chapter(request, language, id_book, reader_chapter=1):
         plt.xticks(range(len(hsk_counter)), labels)
         plt.savefig(path_barplot)
         plt.clf()
+
 
     t2 = time.time()
     print('D2', t2 - t1)
