@@ -42,7 +42,8 @@ table th {
 
 table {
   border-collapse: collapse;
-  margin: 0 auto 20px auto;
+  margin: 0 0 20px 0;
+  width: 100%;
 }
 
 th {
@@ -69,7 +70,7 @@ table tr:nth-child(odd) {
 }
 
 #book-content {
-    max-width: 400px;
+    max-width: 600px;
     margin: 0 auto;
 }
 
