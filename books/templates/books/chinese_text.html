@@ -6,12 +6,33 @@
 {% block extra_head%}
     <link rel="stylesheet" type="text/css" href="{% static 'books/css/style.css' %}">
     <script type="text/javascript">
+
+    var current_clicked_token = '';
+
         function getClickedToken(obj) {
-        let clickedToken = obj.getAttribute("token");
-    <!-- document.getElementById("clickedToken").innerHTML = clickedToken;-->
-         document.getElementById(clickedToken).scrollIntoView();
+
+        if (current_clicked_token !== "") {
+            console.log(current_clicked_token)
+        }
+
+
+        current_clicked_token = obj.getAttribute("token")
+        console.log(current_clicked_token)
+        console.log(obj.hasAttribute('token'));
+
+        var element = document.getElementById(current_clicked_token);
+        element.classList.add("current");
+        element.scrollIntoView({
+                            behavior: "auto",
+                            block:"center",
+                            });
+<!--        }-->
+
+<!-- document.getElementById("clickedToken").innerHTML = current_clicked_token;-->
+
     }
     </script>
+
 {% endblock %}
 
 <!--{% block header %}<h1>{{id_book}}</h1>{% endblock %}-->
@@ -26,36 +47,22 @@
 <!--            {% endwith %}-->
 
             <!--<p id="clickedToken">test</p>-->
-
-
-            <!--<table id="table-hsk">
-                <tr>
-                    <td>Level</td>
-                    <td>Count</td>
-                    <td>Ratio</td>
-                </tr>
-                {% for level, count in hsk_counter.items %}
-                <tr>
-                    <td >{{ level }}</td>
-                    <td>{{ count }}</td>
-                    <td>{% widthratio count size_corpus 100 %}</td>
-                </tr>
-                {% endfor %}
-            </table>-->
         </div>
 
         <div id="right-lower">
             <table id="table-words">
-                <tr>
-                    <td> Rank</td>
-                    <td> Char</td>
-                    <td> Freq</td>
-                    <td> Rel F</td>
-                </tr>
+                <thead>
+                    <tr>
+                        <th> Rank</th>
+                        <th> Char</th>
+                        <th> Freq</th>
+                        <th> Rel F</th>
+                    </tr>
+                </thead>
                 {% for char, freq in freqs %}
-                <tr>
+                <tr id="{{char}}">
                     <td>{{ forloop.counter0 }}</td>
-                    <td id="{{char}}">{{ char }}</td>
+                    <td >{{ char }}</td>
                     <td>{{ freq }}</td>
                     <td>{% widthratio freq size_corpus 100 %}</td>
                 </tr>
@@ -67,28 +74,35 @@
 
     <div id="left-div" >
 
-        <header><h1>{{id_book}}</h1></header>
-        <h2>{{chapter_name}}</h2>
-
         <div id="book-content">
-            {% for token, list_line in zip_list %}
-            {% if token == '@$$@' %}
-            <br>
-            {% else %}
-            <p class="tooltip" onclick="getClickedToken(this)" token="{{token}}">{{token}}
-                <span class="tooltiptext">
-                    <span class="tt-hanzi">{{list_line.0}} [{{list_line.1}}]</span>
-                    <br>
-                    <span class="tt-fayin">{{list_line.2}}</span>
-                    <br>
-                    {% for def in list_line.3 %}
-                    <br>
-                    <span class="tt-def">- {{def}}</span>
-                    {% endfor %}
-                </span>
-            </p>
-            {% endif %}
-            {% endfor %}
+            <header><h1>{{id_book}}</h1></header>
+            <h2>{{chapter_name}}</h2>
+
+            <div id="book-text">
+                {% for token, list_line in zip_list %}
+                {% if token == '@$$@' %}
+                <br>
+                {% else %}
+                    {% if list_line == 'punctuation'%}
+                        <p class="punctuation">{{token}}</p>
+                    {% else %}
+                        <p class="tooltip" onclick="getClickedToken(this)" token="{{token}}">{{token}}
+                            <span class="tooltiptext">
+                                <span class="tt-hanzi">{{list_line.0}} [{{list_line.1}}]</span>
+                                <br>
+                                <span class="tt-fayin">{{list_line.2}}</span>
+                                <br>
+                                {% for def in list_line.3 %}
+                                <br>
+                                <span class="tt-def">- {{def}}</span>
+                                {% endfor %}
+                            </span>
+                        </p>
+                    {% endif %}
+
+                {% endif %}
+                {% endfor %}
+            </div>
         </div>
     </div>
 

@@ -10,43 +10,10 @@ import time
 import jieba
 import os
 import matplotlib.pyplot as plt
-
-def get_chinese(context):
-#     context = context.decode("utf-8") # convert context from str to unicode
-    filtrate = re.compile(u'[^\u4E00-\u9FA5]') # non-Chinese unicode range
-    context = filtrate.sub(r'', context) # remove all non-Chinese characters
-#     context = context.encode("utf-8") # convert unicode back to str
-    return context
+from .utils.chinese_utils import rmv_not_chinese, find_chapter_separator
 
 
-def rmv_not_chinese(counter):
-    for key in counter.copy().keys():
-        if get_chinese(key) == '':
-            del counter[key]
-    return counter
-
-
-def find_chapter_separator(txt):
-    jie_sep = re.findall('第[一二三四五六七八九十百零0-9]{1,5}节[\n\\s\t]', txt)
-    zhang_sep = re.findall('第[一二三四五六七八九十百零0-9]{1,5}章[\n\\s\t]', txt)
-
-    jie_count = len(jie_sep)
-    zhang_count = len(zhang_sep)
-
-    count = 0
-
-    if jie_count > zhang_count:
-        separator = "节"
-        seps = jie_sep
-    elif zhang_count > jie_count:
-        separator = '章'
-        seps = zhang_sep
-    elif (zhang_count == 0) & (jie_count == 0):
-        separator = False
-        seps = []
-
-    return (separator, seps)
-
+jieba.initialize()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -55,17 +22,9 @@ if 'www/ReadItEasy' in BASE_DIR:
     DJANGO_DEVELOPMENT = False
 
 
-# path_books = "data/books/"
 path_books = os.path.join(BASE_DIR, 'data', 'books')
-jieba.initialize()
-# path_ce_dict = "data/dict/tab_cedict_ts.u8"
-# path_ce_dict = os.path.abspath(path_ce_dict)
 path_ce_dict = os.path.join(BASE_DIR, 'data', 'dict', 'tab_cedict_ts.u8')
-
-
 path_hsk_vocab = os.path.join(BASE_DIR, 'data', 'hsk_vocab', 'HSK1->6.csv')
-# path_hsk_vocab = "data/hsk_vocab/HSK1->6.csv"
-# path_hsk_vocab = os.path.abspath(path_hsk_vocab)
 path_books_app = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -73,7 +32,6 @@ if DJANGO_DEVELOPMENT:
     path_books_cache = os.path.join(path_books_app, 'static', 'books', 'cache')
 else:
     path_books_cache = os.path.join(BASE_DIR, 'ReadItEasy', 'static', 'books', 'cache')
-
 
 if not os.path.isdir(path_books_cache):
     os.makedirs(path_books_cache)
@@ -155,13 +113,15 @@ def get_user_text(request):
 #         return redirect(show_chapter, language, id_book)
 
 
-def show_chapter(request, language, id_book, reader_chapter=1):
+def show_chapter(request, language, id_book, reader_chapter=None):
+    if reader_chapter is None:
+        return redirect(show_chapter, language=language, id_book=id_book, reader_chapter=1)
+
     if language == 'mandarin':
         return mandarin_chapter(request, language=language, id_book=id_book, reader_chapter=reader_chapter)
 
     elif language == 'english':
         return english_chapter(request, language=language, id_book=id_book, reader_chapter=reader_chapter)
-
 
     else:
         return redirect(show_languages)
@@ -198,8 +158,13 @@ def mandarin_chapter(request, language, id_book, reader_chapter=1):
     for token in chapter_tokens:
         if token =='\n':
             token = '@$$@'
+
         list_words.append(token)
-        list_words_meta.append(sim2cedict.get(token, ['-']*4))
+        if token in ['—', '。', '，', '“', '”', '　', '？', '！', '、', '《', '》', '：']:
+            list_words_meta.append('punctuation')
+        else:
+            list_words_meta.append(sim2cedict.get(token, ['-'] * 4))
+
     zip_list = zip(list_words, list_words_meta)
 
     # # save the tokenized text and data in cache
