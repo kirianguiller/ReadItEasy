@@ -76,14 +76,26 @@ def get_books():
     return list_books
 
 
-def show_languages(request):
+def show_books_list(request):
     list_languages = os.listdir(path_books)
-    return render(request, "books/show_list.html", {"list": list_languages})
+    list_books_per_languages = []
+
+    for language in list_languages:
+        path_language = os.path.join(path_books, language)
+        list_books = []
+        for book in os.listdir(path_language):
+            list_books.append(book.split('.')[0])
+
+        list_books_per_languages.append(list_books)
+
+    lists = zip(list_languages, list_books_per_languages)
+
+    return render(request, "books/show_books_list.html", {"lists": lists})
 
 
 def show_books(request, language):
     if language not in ['english', 'mandarin']:
-        return redirect(show_languages)
+        return redirect(show_books)
     path_language = os.path.join(path_books, language)
     list_books = []
     for book in os.listdir(path_language):

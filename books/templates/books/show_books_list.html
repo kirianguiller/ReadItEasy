@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %} Books List {% endblock %}
+
+<header><h1>Books List</h1></header>
+
+{% block content %}
+
+  {% for language, list_books in lists %}
+
+    <h2>{{language}}</h2>
+
+    {% for book in list_books %}
+
+      {% with language|add:"/"|add:book as varname %}
+        <p><a href="{{varname}}">{{book}}</a></p>
+      {% endwith %}
+
+    {% endfor %}
+
+  {% endfor %}
+{% endblock %}
