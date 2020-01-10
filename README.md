@@ -1,7 +1,5 @@
 # ReadItEasy
-Chinese tokenizer interface project from Shuai and Kirian (NLP master 2 in INALCO)
-
-A rendre pour le 10 Janvier 2020
+Website made by Kirian Guiller, scripts made by Shuai Gao and Kirian Guiller. Tool licenced under AGPL-3.0
 
 This repository contains code for ReadItEasy, a web interface for helping users to read chinese (simplify and traditional characters).
 
