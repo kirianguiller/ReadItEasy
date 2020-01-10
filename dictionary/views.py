@@ -11,7 +11,7 @@ path_dictionary_app = os.path.dirname(os.path.abspath(__file__))
 
 path_ce_dict = os.path.join(BASE_DIR, 'data', 'dict', 'tab_cedict_ts.u8')
 path_hsk_vocab = os.path.join(BASE_DIR, 'data', 'hsk_vocab', 'HSK1->6.csv')
-path_neighbors_words = """/home/wran/memoire/ChineseProjects/embeddings/trained_embeddings/chinese_embeddings_552books_neighbors.tsv"""
+path_neighbors_words = os.path.join(BASE_DIR, 'data', 'embeddings', 'chinese_embeddings_552books_neighbors.tsv')
 
 
 def show_word_data(request, language, user_word):
