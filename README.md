@@ -24,6 +24,10 @@ And finally install the required packages
 pip install requirements.txt
 ```
 ## Running the server
+Before running the server, it is important (especially in production) to collect the static files by running :
+```
+python manage.py collectstatic
+```
 To run the server, you simply need to run the following line at the root of the directory
 ```
 python manage.py runserver
