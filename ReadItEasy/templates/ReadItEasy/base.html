@@ -15,13 +15,6 @@
       <div><a href="/">ReadItEasy</a></div>
         <ul>
             <li><a class="nav-link" href="/books">Books</a>
-            {% if user.is_authenticated %}
-            <li><a class="nav-link" href="/logout">Log Out</a>
-            <li><a class="nav-link" href="/profile">Profile</a>
-            {% else %}
-            <li><a class="nav-link" href="/register">Register</a>
-            <li><a class="nav-link" href="/login">Log In</a>
-            {% endif %}
             <li><a class="nav-link" href="/contact">Contact</a>
 
         </ul>
