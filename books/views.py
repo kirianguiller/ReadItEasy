@@ -212,7 +212,7 @@ def mandarin_chapter(request, language, id_book, reader_chapter):
     # ... list for later use in the template
     n_tokens_book = sum(book_freqs.values()) # number of token in the book
     list_words_stats = []
-    size_limit = 1000
+    size_limit = 10000
     for char, abs_freq in book_freqs.most_common(size_limit):
         book_rel_freq = 100 * abs_freq / n_tokens_book          # freq in %
         corpus_rank, corpus_rel_freq = corpus_stats.get(char, [0, 0])

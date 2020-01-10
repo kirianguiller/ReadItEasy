@@ -10,7 +10,11 @@
 {% block content %}
 <header><h1>Statistics - {{id_book}}</h1></header>
 
+    <div class="container">
+        {% load static %}
+        <div class="item"><img class="img" src="{% static rel_path_barplot %}"/></div>
 
-  {% load static %}
-  <img class="img" src="{% static rel_path_barplot %}"/>
-{% endblock %}
+        <div class="item"><p>Les niveaux HSK sont des niveaux de certifications du chinois. Le niveau 1 étant le plus facile (équivalent A1 environ) et le niveau 6 le plus dur (C1/C2).
+Chaque niveau possède un vocabulaire qu'il est recommandé de connaître pour pouvoir passer l'examen.</p></div>
+</div>
+        {% endblock %}
