@@ -1,98 +1,73 @@
+# django imports
 from django.shortcuts import render, redirect
-from .forms import formText
-from django.http import HttpResponse
+from .forms import formText, SearchForm
+from django.http import Http404
+
+# base imports
 from collections import Counter
 import re
 import pickle
-import shutil
-# Create your views here.
 import time
 import jieba
 import os
 import matplotlib.pyplot as plt
 
-def get_chinese(context):
-#     context = context.decode("utf-8") # convert context from str to unicode
-    filtrate = re.compile(u'[^\u4E00-\u9FA5]') # non-Chinese unicode range
-    context = filtrate.sub(r'', context) # remove all non-Chinese characters
-#     context = context.encode("utf-8") # convert unicode back to str
-    return context
+# user packages imports
+from .utils.chinese_utils import rmv_not_chinese, find_chapter_separator
 
+# jieba initialization
+jieba.initialize()
 
-def rmv_not_chinese(counter):
-    for key in counter.copy().keys():
-        if get_chinese(key) == '':
-            del counter[key]
-    return counter
-
-
-def find_chapter_separator(txt):
-    jie_sep = re.findall('第[一二三四五六七八九十百零0-9]{1,5}节[\n\\s\t]', txt)
-    zhang_sep = re.findall('第[一二三四五六七八九十百零0-9]{1,5}章[\n\\s\t]', txt)
-
-    jie_count = len(jie_sep)
-    zhang_count = len(zhang_sep)
-
-    count = 0
-
-    if jie_count > zhang_count:
-        separator = "节"
-        seps = jie_sep
-    elif zhang_count > jie_count:
-        separator = '章'
-        seps = zhang_sep
-    elif (zhang_count == 0) & (jie_count == 0):
-        separator = False
-        seps = []
-
-    return (separator, seps)
-
-
+# fetch the root project and app path
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+path_books_app = os.path.dirname(os.path.abspath(__file__))
 
+
+# fetch path to different data files
+path_books = os.path.join(BASE_DIR, 'data', 'books')
+path_ce_dict = os.path.join(BASE_DIR, 'data', 'dict', 'tab_cedict_ts.u8')
+path_hsk_vocab = os.path.join(BASE_DIR, 'data', 'hsk_vocab', 'HSK1->6.csv')
+
+
+# check if the project is used in development or in production...
+# ...this is useful because static files are not in the same folders...
+# ...between dev and prod.
 DJANGO_DEVELOPMENT = True
 if 'www/ReadItEasy' in BASE_DIR:
     DJANGO_DEVELOPMENT = False
-
-
-# path_books = "data/books/"
-path_books = os.path.join(BASE_DIR, 'data', 'books')
-jieba.initialize()
-# path_ce_dict = "data/dict/tab_cedict_ts.u8"
-# path_ce_dict = os.path.abspath(path_ce_dict)
-path_ce_dict = os.path.join(BASE_DIR, 'data', 'dict', 'tab_cedict_ts.u8')
-
-
-path_hsk_vocab = os.path.join(BASE_DIR, 'data', 'hsk_vocab', 'HSK1->6.csv')
-# path_hsk_vocab = "data/hsk_vocab/HSK1->6.csv"
-# path_hsk_vocab = os.path.abspath(path_hsk_vocab)
-path_books_app = os.path.dirname(os.path.abspath(__file__))
-
 
 if DJANGO_DEVELOPMENT:
     path_books_cache = os.path.join(path_books_app, 'static', 'books', 'cache')
 else:
     path_books_cache = os.path.join(BASE_DIR, 'ReadItEasy', 'static', 'books', 'cache')
 
-
+# create the books cache folder. This folder will contains saved data which ...
+# ... make the scripts run faster
 if not os.path.isdir(path_books_cache):
     os.makedirs(path_books_cache)
 
-zh2en = {}
+# fetch the data of CE_dict, a chinese -> english open source dictionary.
+# this dict contains informations about
+# - the simplified and traditional form of a chinese caracter : 'zh_trad' and 'zh_simpl'
+# - the pronunciation : 'pronunciation'
+# - the english translation(s) : 'def_list'
+#
+# these information are fetch into the dicts 'sim2cedict'
 sim2cedict = {}
 with open(path_ce_dict, 'r', encoding='utf-8') as f:
     for line in f:
         line = line.rstrip('\n')
-        zh_trad = line.split('\t')[0]
-        zh_simpl = line.split('\t')[1]
+        splitted_line = line.split('\t')
+        zh_trad = splitted_line[0]
+        zh_simpl = splitted_line[1]
         # en_def = line.split('\t')[-1].split('/')[1]
-        fayin = line.split('\t')[2]
-        definitions = line.split('\t')[3]
+        pronunciation = splitted_line[2]
+        definitions = splitted_line[3]
         def_list = []
         for definition in definitions.split('/'):
             if definition != '':
                 def_list.append(definition)
-        list_line = [zh_simpl, zh_trad, fayin, def_list]
+        list_line = [zh_simpl, zh_trad, pronunciation, def_list]
         sim2cedict[zh_simpl] = list_line
 
 # extract hsk information
@@ -106,69 +81,64 @@ with open(path_hsk_vocab, 'r', encoding='utf-8') as f:
             word2hsk[word.rstrip('\n')] = int(hsk_level)
 
 
-def home_book(request):
-    return render(request, "books/home_book.html")
+# from here start the view function defintion. Views will be computed when ...
+# its corresponding url (in 'url.py') will be request by the user
+# IMPORTANT : view are computed at each url access by the user, that's why it's important
+#             to have long time processing script in the first part of the view (outside
+#             function definition). For instance in our case jieba.initialize() and
+#             dict initialisation
 
 
-def get_books():
-    list_books = []
-    for book in os.listdir(path_books):
-        list_books.append(book.split('.')[0])
+def show_books_list(request):
+    """view that show the list of books (per language) available on the server"""
 
-    return list_books
-
-
-def show_languages(request):
+    # get the languages available. All books are inside their corresponding language folder
     list_languages = os.listdir(path_books)
-    return render(request, "books/show_list.html", {"list": list_languages})
 
 
-def show_books(request, language):
-    if language not in ['english', 'mandarin']:
-        return redirect(show_languages)
-    path_language = os.path.join(path_books, language)
-    list_books = []
-    for book in os.listdir(path_language):
-        list_books.append(book.split('.')[0])
-    return render(request, "books/show_list.html", {"list": list_books})
+    # get the list of books per langage
+    list_books_per_languages = []
+    for language in list_languages:
+        path_language = os.path.join(path_books, language)
+        list_books = []
+        for book in os.listdir(path_language):
+            list_books.append(book.split('.')[0])
+
+        list_books_per_languages.append(list_books)
+
+    # create a zip list that associate each language to its available books
+    lists = zip(list_languages, list_books_per_languages)
+
+    return render(request, "books/books_list.html", {"lists": lists})
 
 
-def get_user_text(request):
-    if request.method == 'POST':
-        form = formText(request.POST)
-        if form.is_valid():
-            request.session['0'] = form.cleaned_data['text']
+def show_chapter(request, language, id_book, reader_chapter=None):
+    """show the chapter of a book. In the future, there will be more than one language
+    so we will need a redirection language-wise"""
 
-            return request.session['0']
-    else:
-        form = formText()
-    return render(request, 'books/text_form.html', {
-        'form': form
-    })
+    # if the reader doesn't select a chapter, redirect his request to the  ...
+    # ... url's chapter 1 of the corresponding book
+    if reader_chapter is None:
+        return redirect(show_chapter, language=language, id_book=id_book, reader_chapter=1)
 
-
-# def show_id_book(request, language, id_book):
-#     if language not in ['english', 'mandarin']:
-#         return redirect(show_languages)
-#
-#     if language == 'mandarin':
-#         return redirect(show_chapter, language, id_book)
-
-
-def show_chapter(request, language, id_book, reader_chapter=1):
+    # if language is mandarin, redirect the request to the 'mandarin_chapter()' view
     if language == 'mandarin':
         return mandarin_chapter(request, language=language, id_book=id_book, reader_chapter=reader_chapter)
 
-    elif language == 'english':
-        return english_chapter(request, language=language, id_book=id_book, reader_chapter=reader_chapter)
-
-
+    # else, redirect to the show_books page
     else:
-        return redirect(show_languages)
+        return redirect(show_books_list)
 
 
-def mandarin_chapter(request, language, id_book, reader_chapter=1):
+def mandarin_chapter(request, language, id_book, reader_chapter=None):
+    """IMPORTANT View
+    This view will segment the selected book by chapter, tokenize the text, fetch
+    the meta about words inside the text (pronunciation, definition), compute word
+    frequencies and ranks and do some caching for faster loading
+    """
     t1 = time.time()
+
+    # fetch the path to the book
     path_book = os.path.join(path_books, language, id_book + '.txt')
 
     # create the cache folder for the book if doesn't exist yet
@@ -180,7 +150,9 @@ def mandarin_chapter(request, language, id_book, reader_chapter=1):
     with open(path_book, 'r', encoding='utf-8') as infile:
         full_txt = infile.read()
 
-    # get info about chapter seperator
+    # get info about chapter seperator so we can segment the text by chapter.
+    # it allow to show the text to the user chapter-wise which is less data consuming
+    # the 'find_chapter_separator()' is located in /utils/chinese_utils.py
     chapter_separator, list_seps = find_chapter_separator(full_txt)
     chapters_number = len(list_seps)
     if reader_chapter > chapters_number:
@@ -193,13 +165,22 @@ def mandarin_chapter(request, language, id_book, reader_chapter=1):
 
     # tokenize the chapter
     chapter_tokens = jieba.cut(chapter_txt)
+
+    # fetch all words and words meta to 2 lists for later use in templates
     list_words_meta = []
     list_words = []
     for token in chapter_tokens:
         if token =='\n':
-            token = '@$$@'
+            token = '@$$@' # replace \n by specific token for later use in templates
+
         list_words.append(token)
-        list_words_meta.append(sim2cedict.get(token, ['-']*4))
+
+        #
+        if token in ['—', '。', '，', '“', '”', '　', '？', '！', '、', '《', '》', '：', '…']:
+            list_words_meta.append('punctuation')
+        else:
+            list_words_meta.append(sim2cedict.get(token, ['-'] * 4))
+
     zip_list = zip(list_words, list_words_meta)
 
     # # save the tokenized text and data in cache
@@ -208,6 +189,46 @@ def mandarin_chapter(request, language, id_book, reader_chapter=1):
     #     for word in list_words:
     #         outfile.write(word + '\n')
 
+    # get statistics about the whole book
+    path_freqs_pickle = os.path.join(path_book_cache, 'freqs.pkl')
+    if os.path.isfile(path_freqs_pickle):
+        with open(path_freqs_pickle, 'rb') as f:
+            freqs = pickle.load(f)
+    else:
+        tokenized_full_text = jieba.cut(full_txt)
+        freqs = Counter(tokenized_full_text)
+        freqs = rmv_not_chinese(freqs)
+        with open(path_freqs_pickle, 'wb') as f:
+            pickle.dump(freqs, f, pickle.HIGHEST_PROTOCOL)
+
+    size_corpus = sum(freqs.values())
+
+    t2 = time.time()
+    print('D2', t2 - t1)
+
+    context = {
+        "id_book": id_book,
+        'zip_list': zip_list,
+        "freqs": freqs.most_common(10000),
+        "size_corpus": size_corpus,
+        # "hsk_counter": hsk_counter,
+        "chapter_name": chapter_name,
+        'language': language,
+    }
+    return render(request, "books/mandarin_text.html", context)
+
+
+def show_statistics(request, language, id_book):
+    path_book = os.path.join(path_books, language, id_book + '.txt')
+
+    # create the cache folder for the book if doesn't exist yet
+    path_book_cache = os.path.join(path_books_cache, language, id_book)
+    if not os.path.isdir(path_book_cache):
+        os.makedirs(path_book_cache)
+
+    # load all the book $$ Can improve a little speed here
+    with open(path_book, 'r', encoding='utf-8') as infile:
+        full_txt = infile.read()
 
     # get statistics about the whole book
     path_freqs_pickle = os.path.join(path_book_cache, 'freqs.pkl')
@@ -249,52 +270,45 @@ def mandarin_chapter(request, language, id_book, reader_chapter=1):
         plt.savefig(path_barplot)
         plt.clf()
 
-
-    t2 = time.time()
-    print('D2', t2 - t1)
-
     context = {
         "id_book": id_book,
-        'zip_list': zip_list,
-        "freqs": freqs.most_common(10000),
         "size_corpus": size_corpus,
         # "hsk_counter": hsk_counter,
-        "chapter_name": chapter_name,
         'rel_path_barplot': rel_path_barplot,
-    }
-    return render(request, "books/chinese_text.html", context)
-
-
-def english_chapter(request, language, id_book, reader_chapter):
-    path_book = os.path.join(path_books, language, id_book + '.txt')
-
-    # create the cache folder for the book if doesn't exist yet
-    path_book_cache = os.path.join(path_books_cache, language, id_book)
-    if not os.path.isdir(path_book_cache):
-        os.makedirs(path_book_cache)
-
-    # load all the book $$ Can improve a little speed here
-    with open(path_book, 'r', encoding='utf-8') as infile:
-        full_txt = infile.read()
-
-    txt = full_txt[:10000]
-
-    context = {
-        'id_book': id_book,
-        'txt': txt,
+        'language': language,
     }
 
-    return render(request, "books/english_text.html", context)
+    return render(request, "books/statistics.html", context)
 
-# 
-# @bp.route("/upload", methods=("GET", "POST"))
-# def upload():
-#     if request.method == "POST":
-#         text = request.form['text']
-#         session['processed_text'] = text
-#         return redirect(url_for("read.index"))
-#         # return render_template("upload/uploaded.html")
-#         # render_template("upload/uploaded.html", )
-#     return render("read/upload.html")
+
+def show_search(request, language, id_book):
+    if request.method == 'POST':
+
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            search = form.cleaned_data['query']
+            path_book = os.path.join(path_books, language, id_book + '.txt')
+
+            matching_sentences = []
+            with open(path_book, 'r', encoding='utf-8') as infile:
+                for line in infile:
+                    line = line.replace('\n', '')
+                    for sentence in line.split('。'):
+                        if search in sentence:
+                            sentence = sentence.strip(' ').rstrip(' ')
+                            matching_sentences.append(sentence)
+            print(matching_sentences)
+
+
+            context = {
+                'language': language,
+                'id_book': id_book,
+                'search': search,
+                'matching_sentences': matching_sentences,
+            }
+
+            return render(request, 'books/search.html', context)
+
+    raise Http404
 
 

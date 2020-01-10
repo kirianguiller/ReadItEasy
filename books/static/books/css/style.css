@@ -1,87 +1,101 @@
 #right-div{
-    /*width: 100%;*/
-    /*max-width: 50%;*/
-    width: 40%;
+    max-width: 40%;
     height: 100%;
     position: fixed;
-    height: calc(100vh - 60px);
     top: 60px;
     right: 0px;
     float: right;
     padding:0px;
-/*    padding: 10px 10px 0px 10px;*/
     border-left:#black 2px solid;
-/*    background:#fafafb;*/
-
-/*    overflow-y: auto;
-    scrollbar-color: rgba(0,0,0,0.2) transparent;
-    scrollbar-width: thin;*/
-
     border: 1px solid #d6d9dc;
     border-top-width: 0;
     border-bottom-width: 0;
     border-left-width: 1px;
     text-align: center;
-
     font-size: 22px;
 }
 
 #right-upper{
-    height:40%;
-    background-color: #555;
-}
-
-#right-upper img{
-    height:100%;
-
-}
-
-#clickedToken{
-    /*display:inline-block;
-    margin-top:0px;*/
-    margin:auto;
-}
-
-#table-hsk {
-  border-collapse: collapse;
-  margin: 20px auto;
-/*  font-size: 22px;*/
-}
-
-#table-hsk td, #table-hsk th {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-
-#right-lower{
     overflow-y: auto;
     scrollbar-color: rgba(0,0,0,0.2) transparent;
     scrollbar-width: thin;
-    height: 60%;
-    bottom: 0px;
-    padding-bottom:10px;
+    max-height: calc(100% - 160px);
+/*    bottom: 0px;*/
+    padding-bottom:0px;
 }
 
-#table-words {
+table th {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+}
+
+table {
   border-collapse: collapse;
-  margin: 20px auto;
-/*  font-size: 22px;*/
+  margin: 0 0 20px 0;
+  width: 100%;
 }
 
-#table-words td, #table-words th {
-  border: 1px solid #ddd;
-  padding: 8px;
+th {
+  background-color: #1976D2;
+  color: #fff;
 }
+
+table tr {
+  color: #212121;
+}
+
+table tr:nth-child(odd) {
+  background-color: #BBDEFB;
+}
+
+table tr a {
+  text-decoration: none;
+}
+
+.current {
+    color: red !important;
+}
+
+.current a {
+    color: red !important;
+}
+
+#right-lower{
+/*    height:40%;*/
+    background-color: white;
+    height: 100px;
+    padding-top: 15px;
+}
+
+.box {
+    box-sizing: border-box;
+}
+
+#search-div {
+    max-height:30px;
+}
+
+#href-statistics{
+    max-height: 30px;
+
+}
+/*#right-lower img{
+    height:100%;*/
 
 
 #left-div{
-    width: 55%;
-    style=margin-left: 1em;
-    float: left;
+    max-width: 60%;
+/*    margin-left: 5%;*/
+    position:relative;
 }
 
-#book-content{
+#book-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+#book-text{
     font-size: 0px;
 }
 
@@ -94,6 +108,15 @@
   margin-block-end: 0em;
   /*border-bottom: 0px dotted black;*/
 
+}
+
+.punctuation {
+  font-size: 24px;
+  margin-top: 5px;
+  position: relative;
+  display: inline-block;
+  style=margin-block-start: 0em;
+  margin-block-end: 0em;
 }
 
 .tooltip .tooltiptext {
@@ -119,6 +142,7 @@
 
 .tooltip:hover {
   background-color: #ebca71;
+  cursor: pointer;
 }
 
 .tooltip:hover .tooltiptext {

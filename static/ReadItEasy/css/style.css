@@ -77,8 +77,12 @@ nav ul  {
 }*/
 
 .content {
-  padding: 0 1rem 1rem;
-  margin-top: 70px;
+  position:relative;
+/*  height: calc(100vh - 60px);*/
+/*    height:100%;*/
+    width: 100%;
+/*  margin-top: 0px;*/
+    top: 60px;
 }
 
 h2 {
@@ -86,9 +90,9 @@ h2 {
 }
 
 
-.content:last-child {
+/*.content:last-child {
   margin-bottom: 0;
-}
+}*/
 
 .content form {
   margin: 1em 0;
