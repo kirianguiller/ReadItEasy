@@ -38,41 +38,7 @@
 <!--{% block header %}<h1>{{id_book}}</h1>{% endblock %}-->
 
 {% block content %}
-
-    <div id="right-div"><!--
-        <div class="content-sidebar"></div>-->
-        <div id="right-upper">
-<!--            {% with "books/cache/"|add:id_book|add:"/hsk_barplot.png" as path_hsk_barplot %}-->
-            <img src='{% static rel_path_barplot %}' alt="HSK Distribution Bar Plot">
-<!--            {% endwith %}-->
-
-            <!--<p id="clickedToken">test</p>-->
-        </div>
-
-        <div id="right-lower">
-            <table id="table-words">
-                <thead>
-                    <tr>
-                        <th> Rank</th>
-                        <th> Char</th>
-                        <th> Freq</th>
-                        <th> Rel F</th>
-                    </tr>
-                </thead>
-                {% for char, freq in freqs %}
-                <tr id="{{char}}">
-                    <td>{{ forloop.counter0 }}</td>
-                    <td >{{ char }}</td>
-                    <td>{{ freq }}</td>
-                    <td>{% widthratio freq size_corpus 100 %}</td>
-                </tr>
-                {% endfor %}
-            </table>
-         </div>
-    </div>
-
-
-    <div id="left-div" >
+ <div id="left-div" >
 
         <div id="book-content">
             <header><h1>{{id_book}}</h1></header>
@@ -105,5 +71,45 @@
             </div>
         </div>
     </div>
+
+    <div id="right-div"><!--
+        <div class="content-sidebar"></div>-->
+        <div id="right-upper">
+            <table id="table-words">
+                <thead>
+                    <tr>
+                        <th>Char</th>
+                        <th>Rank</th>
+                        <th>Freq</th>
+                        <th>Rel F</th>
+                    </tr>
+                </thead>
+                {% for char, freq in freqs %}
+                <tr id="{{char}}">
+                    <td><a href="/dictionary/mandarin/{{char}}" target="_blank">{{ char }}</a></td>
+
+                    <td>{{ forloop.counter0 }}</td>
+                    <td>{{ freq }}</td>
+                    <td>{% widthratio freq size_corpus 100 %}</td>
+                </tr>
+                {% endfor %}
+            </table>
+         </div>
+
+        <div id="right-lower">
+
+            <div class="box" id="href-statistics">
+                <a href="/books/{{language}}/{{id_book}}/statistics" target="_blank">-> See book statistics <-</a>
+            </div>
+            <div id="search-div" class="box">
+                <form method="post" target="_blank" action="search/">{% csrf_token %}
+                    <input type="text" id="id_query" name="query" placeholder="Enter a regex">
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
 
 {% endblock %}

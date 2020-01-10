@@ -1,15 +1,18 @@
+# django imports
 from django.shortcuts import render, redirect
-from .forms import formText
-from django.http import HttpResponse
+from .forms import formText, SearchForm
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+
+# base imports
 from collections import Counter
 import re
 import pickle
-import shutil
-# Create your views here.
 import time
 import jieba
 import os
 import matplotlib.pyplot as plt
+
+# user packages imports
 from .utils.chinese_utils import rmv_not_chinese, find_chapter_separator
 
 
@@ -17,16 +20,15 @@ jieba.initialize()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DJANGO_DEVELOPMENT = True
-if 'www/ReadItEasy' in BASE_DIR:
-    DJANGO_DEVELOPMENT = False
-
-
 path_books = os.path.join(BASE_DIR, 'data', 'books')
 path_ce_dict = os.path.join(BASE_DIR, 'data', 'dict', 'tab_cedict_ts.u8')
 path_hsk_vocab = os.path.join(BASE_DIR, 'data', 'hsk_vocab', 'HSK1->6.csv')
 path_books_app = os.path.dirname(os.path.abspath(__file__))
 
+
+DJANGO_DEVELOPMENT = True
+if 'www/ReadItEasy' in BASE_DIR:
+    DJANGO_DEVELOPMENT = False
 
 if DJANGO_DEVELOPMENT:
     path_books_cache = os.path.join(path_books_app, 'static', 'books', 'cache')
@@ -68,14 +70,6 @@ def home_book(request):
     return render(request, "books/home_book.html")
 
 
-def get_books():
-    list_books = []
-    for book in os.listdir(path_books):
-        list_books.append(book.split('.')[0])
-
-    return list_books
-
-
 def show_books_list(request):
     list_languages = os.listdir(path_books)
     list_books_per_languages = []
@@ -93,38 +87,6 @@ def show_books_list(request):
     return render(request, "books/show_books_list.html", {"lists": lists})
 
 
-def show_books(request, language):
-    if language not in ['english', 'mandarin']:
-        return redirect(show_books)
-    path_language = os.path.join(path_books, language)
-    list_books = []
-    for book in os.listdir(path_language):
-        list_books.append(book.split('.')[0])
-    return render(request, "books/show_list.html", {"list": list_books})
-
-
-def get_user_text(request):
-    if request.method == 'POST':
-        form = formText(request.POST)
-        if form.is_valid():
-            request.session['0'] = form.cleaned_data['text']
-
-            return request.session['0']
-    else:
-        form = formText()
-    return render(request, 'books/text_form.html', {
-        'form': form
-    })
-
-
-# def show_id_book(request, language, id_book):
-#     if language not in ['english', 'mandarin']:
-#         return redirect(show_languages)
-#
-#     if language == 'mandarin':
-#         return redirect(show_chapter, language, id_book)
-
-
 def show_chapter(request, language, id_book, reader_chapter=None):
     if reader_chapter is None:
         return redirect(show_chapter, language=language, id_book=id_book, reader_chapter=1)
@@ -132,14 +94,13 @@ def show_chapter(request, language, id_book, reader_chapter=None):
     if language == 'mandarin':
         return mandarin_chapter(request, language=language, id_book=id_book, reader_chapter=reader_chapter)
 
-    elif language == 'english':
-        return english_chapter(request, language=language, id_book=id_book, reader_chapter=reader_chapter)
-
     else:
-        return redirect(show_languages)
+        return redirect(show_books_list)
 
 
-def mandarin_chapter(request, language, id_book, reader_chapter=1):
+def mandarin_chapter(request, language, id_book, reader_chapter=None):
+    if request.POST:
+        print('REQUEST POST\n\n\n')
     t1 = time.time()
     path_book = os.path.join(path_books, language, id_book + '.txt')
 
@@ -172,7 +133,7 @@ def mandarin_chapter(request, language, id_book, reader_chapter=1):
             token = '@$$@'
 
         list_words.append(token)
-        if token in ['—', '。', '，', '“', '”', '　', '？', '！', '、', '《', '》', '：']:
+        if token in ['—', '。', '，', '“', '”', '　', '？', '！', '、', '《', '》', '：', '…']:
             list_words_meta.append('punctuation')
         else:
             list_words_meta.append(sim2cedict.get(token, ['-'] * 4))
@@ -185,6 +146,46 @@ def mandarin_chapter(request, language, id_book, reader_chapter=1):
     #     for word in list_words:
     #         outfile.write(word + '\n')
 
+    # get statistics about the whole book
+    path_freqs_pickle = os.path.join(path_book_cache, 'freqs.pkl')
+    if os.path.isfile(path_freqs_pickle):
+        with open(path_freqs_pickle, 'rb') as f:
+            freqs = pickle.load(f)
+    else:
+        tokenized_full_text = jieba.cut(full_txt)
+        freqs = Counter(tokenized_full_text)
+        freqs = rmv_not_chinese(freqs)
+        with open(path_freqs_pickle, 'wb') as f:
+            pickle.dump(freqs, f, pickle.HIGHEST_PROTOCOL)
+
+    size_corpus = sum(freqs.values())
+
+    t2 = time.time()
+    print('D2', t2 - t1)
+
+    context = {
+        "id_book": id_book,
+        'zip_list': zip_list,
+        "freqs": freqs.most_common(10000),
+        "size_corpus": size_corpus,
+        # "hsk_counter": hsk_counter,
+        "chapter_name": chapter_name,
+        'language': language,
+    }
+    return render(request, "books/chinese_text.html", context)
+
+
+def show_book_statistics(request, language, id_book):
+    path_book = os.path.join(path_books, language, id_book + '.txt')
+
+    # create the cache folder for the book if doesn't exist yet
+    path_book_cache = os.path.join(path_books_cache, language, id_book)
+    if not os.path.isdir(path_book_cache):
+        os.makedirs(path_book_cache)
+
+    # load all the book $$ Can improve a little speed here
+    with open(path_book, 'r', encoding='utf-8') as infile:
+        full_txt = infile.read()
 
     # get statistics about the whole book
     path_freqs_pickle = os.path.join(path_book_cache, 'freqs.pkl')
@@ -226,44 +227,62 @@ def mandarin_chapter(request, language, id_book, reader_chapter=1):
         plt.savefig(path_barplot)
         plt.clf()
 
-
-    t2 = time.time()
-    print('D2', t2 - t1)
-
     context = {
         "id_book": id_book,
-        'zip_list': zip_list,
-        "freqs": freqs.most_common(10000),
         "size_corpus": size_corpus,
         # "hsk_counter": hsk_counter,
-        "chapter_name": chapter_name,
         'rel_path_barplot': rel_path_barplot,
-    }
-    return render(request, "books/chinese_text.html", context)
-
-
-def english_chapter(request, language, id_book, reader_chapter):
-    path_book = os.path.join(path_books, language, id_book + '.txt')
-
-    # create the cache folder for the book if doesn't exist yet
-    path_book_cache = os.path.join(path_books_cache, language, id_book)
-    if not os.path.isdir(path_book_cache):
-        os.makedirs(path_book_cache)
-
-    # load all the book $$ Can improve a little speed here
-    with open(path_book, 'r', encoding='utf-8') as infile:
-        full_txt = infile.read()
-
-    txt = full_txt[:10000]
-
-    context = {
-        'id_book': id_book,
-        'txt': txt,
+        'language': language,
     }
 
-    return render(request, "books/english_text.html", context)
+    return render(request, "books/book_statistics.html", context)
 
-# 
+
+def show_search(request, language, id_book):
+    if request.method == 'POST':
+
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            search = form.cleaned_data['query']
+            path_book = os.path.join(path_books, language, id_book + '.txt')
+
+            matching_sentences = []
+            with open(path_book, 'r', encoding='utf-8') as infile:
+                for line in infile:
+                    line = line.replace('\n', '')
+                    for sentence in line.split('。'):
+                        if search in sentence:
+                            sentence = sentence.strip(' ').rstrip(' ')
+                            matching_sentences.append(sentence)
+            print(matching_sentences)
+
+
+            context = {
+                'language': language,
+                'id_book': id_book,
+                'search': search,
+                'matching_sentences': matching_sentences,
+            }
+
+            return render(request, 'books/search.html', context)
+
+    raise Http404
+
+
+def get_user_text(request):
+    if request.method == 'POST':
+        form = formText(request.POST)
+        if form.is_valid():
+            request.session['0'] = form.cleaned_data['text']
+
+            return request.session['0']
+    else:
+        form = formText()
+    return render(request, 'books/text_form.html', {
+        'form': form
+    })
+
+#
 # @bp.route("/upload", methods=("GET", "POST"))
 # def upload():
 #     if request.method == "POST":

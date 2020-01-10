@@ -16,22 +16,12 @@
 }
 
 #right-upper{
-    height:40%;
-    background-color: white;
-}
-
-#right-upper img{
-    height:100%;
-
-}
-
-#right-lower{
     overflow-y: auto;
     scrollbar-color: rgba(0,0,0,0.2) transparent;
     scrollbar-width: thin;
-    max-height: 60%;
+    max-height: calc(100% - 160px);
 /*    bottom: 0px;*/
-    padding-bottom:10px;
+    padding-bottom:0px;
 }
 
 table th {
@@ -59,9 +49,40 @@ table tr:nth-child(odd) {
   background-color: #BBDEFB;
 }
 
+table tr a {
+  text-decoration: none;
+}
+
 .current {
     color: red !important;
 }
+
+.current a {
+    color: red !important;
+}
+
+#right-lower{
+/*    height:40%;*/
+    background-color: white;
+    height: 100px;
+    padding-top: 15px;
+}
+
+.box {
+    box-sizing: border-box;
+}
+
+#search-div {
+    max-height:30px;
+}
+
+#href-statistics{
+    max-height: 30px;
+
+}
+/*#right-lower img{
+    height:100%;*/
+
 
 #left-div{
     max-width: 60%;

@@ -12,8 +12,8 @@
 
     {% for book in list_books %}
 
-      {% with language|add:"/"|add:book as varname %}
-        <p><a href="{{varname}}">{{book}}</a></p>
+      {% with language|add:"/"|add:book as path_book %}
+        <p><a href="{{path_book}}">{{book}}</a></p>
       {% endwith %}
 
     {% endfor %}
