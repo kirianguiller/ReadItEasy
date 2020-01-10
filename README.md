@@ -1,5 +1,5 @@
 # ReadItEasy
-Website made by Kirian Guiller, scripts made by Shuai Guao and Kirian Guiller. Tool licenced under AGPL-3.0
+Website made by Kirian Guiller, scripts made by Shuai Gao and Kirian Guiller. Tool licenced under AGPL-3.0
 
 This repository contains code for ReadItEasy, a web interface for helping users to read chinese (simplify and traditional characters).
 
