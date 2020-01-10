@@ -5,16 +5,19 @@ from django.http import Http404
 # base imports
 import os
 
-
+# fetch the root project and app path
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 path_dictionary_app = os.path.dirname(os.path.abspath(__file__))
 
+# fetch path to different data files
 path_ce_dict = os.path.join(BASE_DIR, 'data', 'dict', 'tab_cedict_ts.u8')
 path_hsk_vocab = os.path.join(BASE_DIR, 'data', 'hsk_vocab', 'HSK1->6.csv')
 path_neighbors_words = os.path.join(BASE_DIR, 'data', 'embeddings', 'chinese_embeddings_552books_neighbors.tsv')
 
 
 def show_word_data(request, language, user_word):
+    """This view redirect the request for a corresponding valid language function.
+    Currently, only mandarin is supported"""
     if language == 'mandarin':
         return mandarin_word_data(request, language=language, user_word=user_word)
     else:
@@ -22,14 +25,17 @@ def show_word_data(request, language, user_word):
 
 
 def mandarin_word_data(request, language, user_word):
-    is_in_dict = False
+    """This view prepare the data about a word for printing them in the
+    html template"""
 
+    is_in_dict = False # if the word is not in CEDICT, this value will stay false
+
+    # open the ce_dict and fetch the information for the wanted word
     with open(path_ce_dict, 'r', encoding='utf-8') as f:
         for line in f:
             line = line.rstrip('\n')
             zh_trad = line.split('\t')[0]
             zh_simpl = line.split('\t')[1]
-            # en_def = line.split('\t')[-1].split('/')[1]
             fayin = line.split('\t')[2]
             definitions = line.split('\t')[3]
             def_list = []
@@ -38,19 +44,19 @@ def mandarin_word_data(request, language, user_word):
                     def_list.append(definition)
             list_line = [zh_simpl, zh_trad, fayin, def_list]
 
+            # if word is found, fetch the data and break the loop
             if (user_word == zh_simpl) | (user_word == zh_trad):
                 is_in_dict = True
                 break
 
+        # fetch the data located in the word2vec relative word file for
+        # ... showing to the user similar words
         user_relative_words = False
         with open(path_neighbors_words, 'r', encoding='utf-8') as infile:
             for line in infile:
                 word, *neighbors = line.split('\t')
                 if word == user_word:
                     user_relative_words = neighbors
-                    print('EQUALITY', user_relative_words)
-
-
 
     context = {
         'word': user_word,

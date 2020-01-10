@@ -1,10 +1,10 @@
 {% extends 'ReadItEasy/base.html' %}
 {% load static %}
 
-{% block title %} {{id_book}} {% endblock %}
+{% block title %}{{id_book}}{% endblock %}
 
 {% block extra_head%}
-    <link rel="stylesheet" type="text/css" href="{% static 'books/css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'books/css/mandarin_text.css' %}">
     <script type="text/javascript">
 
     var current_clicked_token = '';
@@ -14,7 +14,6 @@
         if (current_clicked_token !== "") {
             console.log(current_clicked_token)
         }
-
 
         current_clicked_token = obj.getAttribute("token")
         console.log(current_clicked_token)
@@ -26,22 +25,21 @@
                             behavior: "auto",
                             block:"center",
                             });
-<!--        }-->
-
-<!-- document.getElementById("clickedToken").innerHTML = current_clicked_token;-->
-
     }
     </script>
-
 {% endblock %}
-
-<!--{% block header %}<h1>{{id_book}}</h1>{% endblock %}-->
 
 {% block content %}
  <div id="left-div" >
 
-        <div id="book-content">
+        <div class="book-content">
             <header><h1>{{id_book}}</h1></header>
+            <div id="chapter-nav">
+                {% if previous_chapter != 0 %}
+                <a class="left-nav" href="{{previous_chapter}}">previous chapter</a>
+                {% endif %}
+                <a class="right-nav" href="{{next_chapter}}">next chapter</a>
+            </div>
             <h2>{{chapter_name}}</h2>
 
             <div id="book-text">
@@ -69,6 +67,13 @@
                 {% endif %}
                 {% endfor %}
             </div>
+            <br>
+            <div class="chapter-nav">
+                {% if previous_chapter != 0 %}
+                <a class="left-nav" href="{{previous_chapter}}">previous chapter</a>
+                {% endif %}
+                <a class="right-nav" href="{{next_chapter}}">next chapter</a>
+            </div>
         </div>
     </div>
 
@@ -78,18 +83,19 @@
                 <thead>
                     <tr>
                         <th>Char</th>
-                        <th>Rank</th>
-                        <th>Freq</th>
-                        <th>Rel F</th>
+                        <th>Book Rank</th>
+                        <th>Book Freq</th>
+                        <th>Corpus Rank</th>
+                        <th>Corpus Freq</th>
                     </tr>
                 </thead>
-                {% for char, freq in freqs %}
+                {% for char, book_rel_freq, corpus_rank, corpus_rel_freq in list_words_stats %}
                 <tr id="{{char}}">
                     <td><a href="/dictionary/mandarin/{{char}}" target="_blank">{{ char }}</a></td>
-
                     <td>{{ forloop.counter0 }}</td>
-                    <td>{{ freq }}</td>
-                    <td>{% widthratio freq size_corpus 100 %}</td>
+                    <td>{{ book_rel_freq }}</td>
+                    <td>{{ corpus_rank }}</td>
+                    <td>{{ corpus_rel_freq }}</td>
                 </tr>
                 {% endfor %}
             </table>
@@ -97,10 +103,10 @@
 
         <div id="right-lower">
 
-            <div class="box" id="href-statistics">
-                <a href="/books/{{language}}/{{id_book}}/statistics" target="_blank">-> See book statistics <-</a>
+            <div id="href-statistics">
+                <a class="button" href="/books/{{language}}/{{id_book}}/statistics" target="_blank">-> See book statistics <-</a>
             </div>
-            <div id="search-div" class="box">
+            <div id="search-div">
                 <form method="post" target="_blank" action="search/">{% csrf_token %}
                     <input type="text" id="id_query" name="query" placeholder="Enter text to search">
                 </form>

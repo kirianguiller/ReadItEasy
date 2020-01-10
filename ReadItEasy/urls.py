@@ -24,6 +24,7 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.show_home),
+    path('contact/', views.show_contact),
     path('', include('users.urls')),
     path('', include('books.urls')),
     path('', include('dictionary.urls')),

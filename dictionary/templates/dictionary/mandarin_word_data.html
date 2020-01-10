@@ -4,43 +4,50 @@
 {% block title %}{{word}} - Data{% endblock %}
 
 {% block extra_head%}
-    <!--<link rel="stylesheet" type="text/css" href="{% static 'books/css/style.css' %}">-->
+    <link rel="stylesheet" type="text/css" href="{% static 'dictionary/css/style.css' %}">
 {% endblock %}
 
 
 {% block content %}
+    <div class='container' id="dict-content">
 
-    {% if is_in_dict is True %}
-    <h1>{{zh_simpl}} ({{zh_trad}})</h1>
+        <div class="item">
+            {% if is_in_dict is True %}
+            <h1>{{zh_simpl}} ({{zh_trad}})</h1>
 
 
-        <span>
-            <span>{{fayin}}</span>
+                <span>
+                    <span>{{fayin}}</span>
+                    <br>
+                    {% for def in def_list %}
+                    <br>
+                    <span>- {{def}}</span>
+                    {% endfor %}
+                    <br>
+                </span>
+            {% else %}
+            <h1>{{word}}</h1>
+            <p>We are still lacking information about this word. You can add it if you want
+                (TODO : add form for adding word data</p>
+            {% endif%}
             <br>
-            {% for def in def_list %}
+            <a href="https://en.wiktionary.org/wiki/{{word}}">English Wikipedia</a>
             <br>
-            <span>- {{def}}</span>
+            <a href="https://zh.wiktionary.org/wiki/{{word}}">Mandarin Wikipedia</a>
+        </div>
+
+        <div class="item">
+            <h2>Relative words</h2>
+            {% if user_relative_words != False %}
+            {% for relative_word in user_relative_words %}
+                <span><a href="/dictionary/mandarin/{{relative_word}}" target="_blank">{{relative_word}}</a></span>
+                <br>
             {% endfor %}
-            <br>
-        </span>
-    {% else %}
-    <h1>{{word}}</h1>
-    <p>We are still lacking information about this word. You can add it if you want
-        (TODO : add form for adding word data</p>
-    {% endif%}
+            {% endif %}
 
 
-    <h2>Relative words</h2>
-    {% if user_relative_words != False %}
-    {% for relative_word in user_relative_words %}
-        <span><a href="/dictionary/mandarin/{{relative_word}}" target="_blank">{{relative_word}}</a></span>
-        <br>
-    {% endfor %}
-    {% endif %}
 
 
-    <br>
-    <a href="https://en.wiktionary.org/wiki/{{word}}">English Wikipedia</a>
-    <br>
-    <a href="https://zh.wiktionary.org/wiki/{{word}}">Mandarin Wikipedia</a>
+        </div>
+    </div>
 {% endblock %}

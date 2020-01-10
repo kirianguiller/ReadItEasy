@@ -1,0 +1,9 @@
+.container {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.item {
+    box-sizing: border-box;
+    padding: 50px;
+}

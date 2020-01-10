@@ -1,11 +1,16 @@
 {% extends 'ReadItEasy/base.html' %}
+{% load static %}
 
 {% block title %}Statistics - {{id_book}}{% endblock %}
+
+{% block extra_head%}
+    <link rel="stylesheet" type="text/css" href="{% static 'books/css/style.css' %}">
+{% endblock %}
 
 {% block content %}
 <header><h1>Statistics - {{id_book}}</h1></header>
 
 
   {% load static %}
-  <img src="{% static rel_path_barplot %}"/>
+  <img class="img" src="{% static rel_path_barplot %}"/>
 {% endblock %}

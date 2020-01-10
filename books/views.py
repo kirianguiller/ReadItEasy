@@ -27,6 +27,7 @@ path_books_app = os.path.dirname(os.path.abspath(__file__))
 path_books = os.path.join(BASE_DIR, 'data', 'books')
 path_ce_dict = os.path.join(BASE_DIR, 'data', 'dict', 'tab_cedict_ts.u8')
 path_hsk_vocab = os.path.join(BASE_DIR, 'data', 'hsk_vocab', 'HSK1->6.csv')
+path_corpus_stats = os.path.join(BASE_DIR, 'data', 'statistics', 'corpus_rank_freqs.pkl')
 
 
 # check if the project is used in development or in production...
@@ -53,14 +54,13 @@ if not os.path.isdir(path_books_cache):
 # - the english translation(s) : 'def_list'
 #
 # these information are fetch into the dicts 'sim2cedict'
-sim2cedict = {}
+cedict = {}
 with open(path_ce_dict, 'r', encoding='utf-8') as f:
     for line in f:
         line = line.rstrip('\n')
         splitted_line = line.split('\t')
         zh_trad = splitted_line[0]
         zh_simpl = splitted_line[1]
-        # en_def = line.split('\t')[-1].split('/')[1]
         pronunciation = splitted_line[2]
         definitions = splitted_line[3]
         def_list = []
@@ -68,7 +68,7 @@ with open(path_ce_dict, 'r', encoding='utf-8') as f:
             if definition != '':
                 def_list.append(definition)
         list_line = [zh_simpl, zh_trad, pronunciation, def_list]
-        sim2cedict[zh_simpl] = list_line
+        cedict[zh_simpl] = list_line
 
 # extract hsk information
 word2hsk = {}
@@ -79,6 +79,8 @@ with open(path_hsk_vocab, 'r', encoding='utf-8') as f:
         else:
             hsk_level, word = line.split(',')
             word2hsk[word.rstrip('\n')] = int(hsk_level)
+
+
 
 
 # from here start the view function defintion. Views will be computed when ...
@@ -94,7 +96,6 @@ def show_books_list(request):
 
     # get the languages available. All books are inside their corresponding language folder
     list_languages = os.listdir(path_books)
-
 
     # get the list of books per langage
     list_books_per_languages = []
@@ -116,9 +117,14 @@ def show_chapter(request, language, id_book, reader_chapter=None):
     """show the chapter of a book. In the future, there will be more than one language
     so we will need a redirection language-wise"""
 
+    # check if the book exists. If it doesn't, redirect to books selection page
+    path_book = os.path.join(path_books, language, id_book + '.txt')
+    if not os.path.isfile(path_book):
+        return redirect(show_books_list)
+
     # if the reader doesn't select a chapter, redirect his request to the  ...
     # ... url's chapter 1 of the corresponding book
-    if reader_chapter is None:
+    if (reader_chapter is None) | (reader_chapter == 0):
         return redirect(show_chapter, language=language, id_book=id_book, reader_chapter=1)
 
     # if language is mandarin, redirect the request to the 'mandarin_chapter()' view
@@ -130,14 +136,12 @@ def show_chapter(request, language, id_book, reader_chapter=None):
         return redirect(show_books_list)
 
 
-def mandarin_chapter(request, language, id_book, reader_chapter=None):
+def mandarin_chapter(request, language, id_book, reader_chapter):
     """IMPORTANT View
     This view will segment the selected book by chapter, tokenize the text, fetch
     the meta about words inside the text (pronunciation, definition), compute word
     frequencies and ranks and do some caching for faster loading
     """
-    t1 = time.time()
-
     # fetch the path to the book
     path_book = os.path.join(path_books, language, id_book + '.txt')
 
@@ -154,6 +158,8 @@ def mandarin_chapter(request, language, id_book, reader_chapter=None):
     # it allow to show the text to the user chapter-wise which is less data consuming
     # the 'find_chapter_separator()' is located in /utils/chinese_utils.py
     chapter_separator, list_seps = find_chapter_separator(full_txt)
+    if chapter_separator is False:
+        raise Http404
     chapters_number = len(list_seps)
     if reader_chapter > chapters_number:
         return redirect(show_chapter, language=language, id_book=id_book, reader_chapter=chapters_number)
@@ -175,50 +181,65 @@ def mandarin_chapter(request, language, id_book, reader_chapter=None):
 
         list_words.append(token)
 
-        #
+        # add a punctuation marker on punctuation element to make it easier to
+        # recognize them in the html template (so we can avoid to add tooltip for them)
         if token in ['—', '。', '，', '“', '”', '　', '？', '！', '、', '《', '》', '：', '…']:
             list_words_meta.append('punctuation')
         else:
-            list_words_meta.append(sim2cedict.get(token, ['-'] * 4))
+            # fetch the meta of a word if it is in our dict
+            list_words_meta.append(cedict.get(token, ['-'] * 4))
 
     zip_list = zip(list_words, list_words_meta)
 
-    # # save the tokenized text and data in cache
-    # path_tokenized_text_cache = os.path.join(path_book_cache, 'tokenized_text.txt')
-    # with open(path_tokenized_text_cache, 'w') as outfile:
-    #     for word in list_words:
-    #         outfile.write(word + '\n')
-
-    # get statistics about the whole book
+    # compute the statistics of the words in the book and cache it for faster reload
     path_freqs_pickle = os.path.join(path_book_cache, 'freqs.pkl')
     if os.path.isfile(path_freqs_pickle):
         with open(path_freqs_pickle, 'rb') as f:
-            freqs = pickle.load(f)
+            book_freqs = pickle.load(f)
     else:
         tokenized_full_text = jieba.cut(full_txt)
-        freqs = Counter(tokenized_full_text)
-        freqs = rmv_not_chinese(freqs)
+        book_freqs = Counter(tokenized_full_text)
+        book_freqs = rmv_not_chinese(book_freqs)
         with open(path_freqs_pickle, 'wb') as f:
-            pickle.dump(freqs, f, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(book_freqs, f, pickle.HIGHEST_PROTOCOL)
 
-    size_corpus = sum(freqs.values())
+    # load the corpus statistics about words. This corpus is a dict with word as
+    # ... key and a list of 2 elements containing the corpus ranking and relative
+    # ... frequence of a word as value
+    with open(path_corpus_stats, 'rb') as pickle_stats:
+        corpus_stats = pickle.load(pickle_stats)
+    # compute the words statistics (book wise and corpus wise) and store them in a list of
+    # ... list for later use in the template
+    n_tokens_book = sum(book_freqs.values()) # number of token in the book
+    list_words_stats = []
+    size_limit = 1000
+    for char, abs_freq in book_freqs.most_common(size_limit):
+        book_rel_freq = 100 * abs_freq / n_tokens_book          # freq in %
+        corpus_rank, corpus_rel_freq = corpus_stats.get(char, [0, 0])
 
-    t2 = time.time()
-    print('D2', t2 - t1)
+        # transform the percent freq in per million freq for better understanding
+        book_rel_freq = int(book_rel_freq * (10**4))
+        corpus_rel_freq = int(corpus_rel_freq * (10**4))
+        list_words_stats.append([char, book_rel_freq, corpus_rank, corpus_rel_freq])
 
     context = {
         "id_book": id_book,
         'zip_list': zip_list,
-        "freqs": freqs.most_common(10000),
-        "size_corpus": size_corpus,
-        # "hsk_counter": hsk_counter,
+        # "freqs": freqs.most_common(10000),
+        # "size_corpus": size_book,
+        'list_words_stats': list_words_stats,
         "chapter_name": chapter_name,
+        "reader_chapter":reader_chapter,
+        "next_chapter":reader_chapter+1,
+        "previous_chapter":reader_chapter-1,
         'language': language,
     }
     return render(request, "books/mandarin_text.html", context)
 
 
 def show_statistics(request, language, id_book):
+    """this view's purpuse is to compute the statistics of the book and send the data
+    to the corresponding template"""
     path_book = os.path.join(path_books, language, id_book + '.txt')
 
     # create the cache folder for the book if doesn't exist yet
@@ -226,11 +247,11 @@ def show_statistics(request, language, id_book):
     if not os.path.isdir(path_book_cache):
         os.makedirs(path_book_cache)
 
-    # load all the book $$ Can improve a little speed here
+    # load the whole book
     with open(path_book, 'r', encoding='utf-8') as infile:
         full_txt = infile.read()
 
-    # get statistics about the whole book
+    # get statistics about the whole book and cache it for faster reload
     path_freqs_pickle = os.path.join(path_book_cache, 'freqs.pkl')
     if os.path.isfile(path_freqs_pickle):
         with open(path_freqs_pickle, 'rb') as f:
@@ -242,14 +263,9 @@ def show_statistics(request, language, id_book):
         with open(path_freqs_pickle, 'wb') as f:
             pickle.dump(freqs, f, pickle.HIGHEST_PROTOCOL)
 
-    size_corpus = sum(freqs.values())
-
-    # fetch hsk data from the book
+    # fetch hsk data from the book and plot it as a bar chart
     path_barplot = os.path.join(path_book_cache, 'hsk_barplot.png')
-    print('PATH BARPLOT ',path_barplot )
     rel_path_barplot = path_barplot.split('/static/')[-1]
-    print('rel_path_barplot :',rel_path_barplot)
-
     if os.path.isfile(path_barplot):
         pass
     else:
@@ -272,8 +288,6 @@ def show_statistics(request, language, id_book):
 
     context = {
         "id_book": id_book,
-        "size_corpus": size_corpus,
-        # "hsk_counter": hsk_counter,
         'rel_path_barplot': rel_path_barplot,
         'language': language,
     }
@@ -282,24 +296,29 @@ def show_statistics(request, language, id_book):
 
 
 def show_search(request, language, id_book):
+    """View for the search tool. The search tool take a string as input
+    and look in the current user book all the sentence that contains this
+    string"""
+
+    # check if there is a post request (the user search post)
     if request.method == 'POST':
 
+        # use django form model to preprocess and clean the data
+        # this prebuild module improve security
         form = SearchForm(request.POST)
         if form.is_valid():
             search = form.cleaned_data['query']
             path_book = os.path.join(path_books, language, id_book + '.txt')
 
+            # iterate through the book to find matching sentences
             matching_sentences = []
             with open(path_book, 'r', encoding='utf-8') as infile:
                 for line in infile:
                     line = line.replace('\n', '')
                     for sentence in line.split('。'):
                         if search in sentence:
-                            sentence = sentence.strip(' ').rstrip(' ')
+                            sentence = sentence.replace(' ', '')
                             matching_sentences.append(sentence)
-            print(matching_sentences)
-
-
             context = {
                 'language': language,
                 'id_book': id_book,
