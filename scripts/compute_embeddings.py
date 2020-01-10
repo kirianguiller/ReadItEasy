@@ -48,7 +48,7 @@ for n, file in enumerate(os.listdir(path_mandarin_books)):
                 line_tokens = jieba.cut(line, cut_all=False, HMM=True)
                 tokenized_sentence = [token for token in line_tokens]
                 tokenized_sentences.append(tokenized_sentence)
-
+    # get time information
     t2 = time.time()
     book_process_time = t2-t1
     list_times.append(book_process_time)
@@ -61,7 +61,7 @@ model = Word2Vec(tokenized_sentences, window=5)
 print('\nWord2Vec is computed !')
 
 word_vectors = model.wv
-name_model = 'mandarin_embeddings_{}book_model.tsv'.format(n_books)
+name_model = 'sample_mandarin_embeddings_{}book_model.tsv'.format(n_books)
 path_model = os.path.join(path_embeddings, name_model)
 word_vectors.save_word2vec_format(path_model)
 
