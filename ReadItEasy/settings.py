@@ -34,8 +34,6 @@ ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = [
     'books.apps.BooksConfig',       # book app
     'dictionary.apps.DictionaryConfig',  # dictionary app
-    'restApi.apps.RestapiConfig',   # restApi
-    'rest_framework',               # added for rest_framework
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
