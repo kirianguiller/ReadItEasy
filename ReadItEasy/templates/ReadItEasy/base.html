@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %} - ReadItEasy</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'ReadItEasy/css/style.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+    <nav class="nav-bar">
+      <div><a href="/">ReadItEasy</a></div>
+        <ul>
+            <li><a class="nav-link" href="/books">Books</a>
+            {% if user.is_authenticated %}
+            <li><a class="nav-link" href="/logout">Log Out</a>
+            <li><a class="nav-link" href="/profile">Profile</a>
+            {% else %}
+            <li><a class="nav-link" href="/register">Register</a>
+            <li><a class="nav-link" href="/login">Log In</a>
+            {% endif %}
+        </ul>
+    </nav>
+    <section class="content">
+        {% block content %}{% endblock %}
+    </section>
+</body>
+</html>

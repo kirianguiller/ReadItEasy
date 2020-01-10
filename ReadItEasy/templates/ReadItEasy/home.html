@@ -1,45 +1,9 @@
-<!DOCTYPE html>
+{% extends 'ReadItEasy/base.html' %}
 
-{% load static %}
+{% block title %} ReatItEasy - Home {% endblock %}
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Home</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'tool1/style.css' %}">
-</head>
+<header><h1>Home</h1></header>
 
-<body>
-    <h1>ReadItEasy Project</h1>
-    <div>
-        <nav class="basic-nav">
-            <a class="basic-nav-text" href="/" rel="nofollow">home</a>
-            <a class="basic-nav-text" href="/upload-audio" rel="nofollow">upload audio</a>
-            <a class="basic-nav-text" href="/text-analyzer" rel="nofollow">text analyzer</a>
-            <a class="basic-nav-text" href="/test" rel="nofollow">test-page</a>
-
-            {% if user.is_authenticated %}
-            <a class="basic-nav-text" href="/profile" rel="nofollow">profile</a>
-            <a class="basic-nav-text" href="/logout" rel="nofollow">logout</a>
-            {% else %}
-            <a class="basic-nav-text" href="/login" rel="nofollow">log in</a>
-            <a class="basic-nav-text" href="/register" rel="nofollow">register</a>
-            {% endif %}
-        </nav>
-    </div>
-    <div class="wrapper">
-        {% if messages %}
-            {% for message in messages %}
-                <div>
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-        {% block content%}
-        <h2> This is main page</h2>
-
-
-        {% endblock %}
-    </div>
-</body>
-</html>
+{% block content %}
+    <p>Welcome to ReadItEasy.com, a website that aim to enable you to read books in your target language</p>
+{% endblock %}

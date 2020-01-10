@@ -14,6 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 # Quick-start development settings - unsuitable for production
@@ -61,9 +62,9 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             # Cette ligne ajoute le dossier templates/ à la racine du projet
-            os.path.join(BASE_DIR, 'templates'), #added
+            os.path.join(PROJECT_DIR, 'templates'), #added
         ],
-        'APP_DIRS': True,
+        'APP_DIRS': True,   # allow to factorize the code by app
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -125,7 +126,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 STATIC_URL = '/static/'
