@@ -1,12 +1,18 @@
 # ReadItEasy
 Website made by Kirian Guiller, scripts made by Shuai Gao and Kirian Guiller. Tool licenced under AGPL-3.0
 
+https://www.readiteasy.com/
+
 This repository contains code for ReadItEasy, a web interface for helping users to read chinese (simplify and traditional characters).
 
 ## Requirements
 * [Django](https://www.djangoproject.com/)
 * [NumPy](http://www.numpy.org/)
+* [Jieba](https://github.com/fxsjy/jieba)
 * [OpenCC](https://pypi.org/project/OpenCC/)
+
+## Open Source Tools 
+* [CC-CEDICT](https://www.mdbg.net/chinese/dictionary?page=cedict)
 
 ## Installing the Virtual Environnement
 `requirements.txt` contain the library you need to download for running the code.
