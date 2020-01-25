@@ -175,7 +175,11 @@ def mandarin_chapter(request, language, id_book, reader_chapter):
     # fetch all words and words meta to 2 lists for later use in templates
     list_words_meta = []
     list_words = []
+    n = 0
     for token in chapter_tokens:
+        n += 1
+        if n > 1000:
+            break
         if token =='\n':
             token = '@$$@' # replace \n by specific token for later use in templates
 
@@ -212,7 +216,7 @@ def mandarin_chapter(request, language, id_book, reader_chapter):
     # ... list for later use in the template
     n_tokens_book = sum(book_freqs.values()) # number of token in the book
     list_words_stats = []
-    size_limit = 10000
+    size_limit = 100
     for char, abs_freq in book_freqs.most_common(size_limit):
         book_rel_freq = 100 * abs_freq / n_tokens_book          # freq in %
         corpus_rank, corpus_rel_freq = corpus_stats.get(char, [0, 0])

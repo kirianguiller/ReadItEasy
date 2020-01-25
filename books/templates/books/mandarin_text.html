@@ -104,12 +104,13 @@
         <div id="right-lower">
 
             <div id="href-statistics">
-                <a class="button" href="/books/{{language}}/{{id_book}}/statistics" target="_blank">-> See book statistics <-</a>
+                <a class="button" href="/books/{{language}}/{{id_book}}/statistics" target="_blank">HSK Statistics</a>
             </div>
             <div id="search-div">
-                <form method="post" target="_blank" action="search/">{% csrf_token %}
+                <form method="post" target="_blank" action="search/" id="search-form">{% csrf_token %}
                     <input type="text" id="id_query" name="query" placeholder="Enter text to search">
                 </form>
+                <button type="submit" form="search-form" value="Submit" id="search-button">search</button>
             </div>
         </div>
     </div>

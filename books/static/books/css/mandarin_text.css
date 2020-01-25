@@ -102,11 +102,22 @@ table tr a {
 
 #search-div {
     max-height:30px;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
 }
 
-#id_query[type="text"]
-{
+#search-form {
+    width:70%;
+}
+
+#id_query[type="text"] {
     font-size:22px;
+    width: 100%;
+}
+
+#search-button {
+    width:20%;
 }
 
 #left-div{
