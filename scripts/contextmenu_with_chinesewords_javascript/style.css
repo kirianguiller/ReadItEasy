@@ -1,0 +1,30 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: "Noto Sans", "Noto Sans CJK SC", sans-serif;
+}
+
+h1 {
+    font-size:50px;
+}
+
+.word {
+  font-size: 50px;
+
+}
+
+.word:hover {
+  background-color: #ebca71;
+  cursor: pointer;
+}
+
+/*.word[known='yes'] {
+    color: red;
+}*/
+.known-words--active {
+  color: red;
+}

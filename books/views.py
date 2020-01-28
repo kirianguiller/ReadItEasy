@@ -178,7 +178,7 @@ def mandarin_chapter(request, language, id_book, reader_chapter):
     n = 0
     for token in chapter_tokens:
         n += 1
-        if n > 1000:
+        if n > 1000000:
             break
         if token =='\n':
             token = '@$$@' # replace \n by specific token for later use in templates
@@ -334,4 +334,29 @@ def show_search(request, language, id_book):
 
     raise Http404
 
+
+from django.http import JsonResponse
+
+
+def send_ajax_json(request):
+    request_word = request.GET.get('word', None)
+    print('REQUEST GET', request.GET)
+    data_list = cedict.get(request_word, None)
+    if data_list:
+        data = {
+            'zh_simpl': data_list[0],
+            'zh_trad': data_list[1],
+            'pronunciation': data_list[2],
+            'definitions': data_list[3],
+            'is_in_dict': True,
+        }
+    else:
+        data = {
+            'is_in_dict': False,
+        }
+    return JsonResponse(data)
+
+
+def ajax_test(request):
+    return render(request, 'books/ajax_test.html')
 

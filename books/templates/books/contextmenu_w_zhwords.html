@@ -1,0 +1,61 @@
+<html>
+    <head>
+      <meta charset="UTF-8">
+      <link rel="stylesheet" type="text/css" href="style.css">
+      <link rel="stylesheet" type="text/css" href="contextmenu.css">
+      <script type="text/javascript">
+        var borderStyleSheet = document.createElement("style");
+        document.head.appendChild(borderStyleSheet);
+        borderStyleSheet.sheet.insertRule(".word[known='yes'] {color: #009900}", 0);
+
+        // disable rule
+        function resetStyle() {
+        borderStyleSheet.disabled = true;
+        }
+
+        // enable rule
+        function setStyle() {
+        borderStyleSheet.disabled = false;
+        }
+        // see existing stylesheets
+        console.log(document.styleSheets);
+
+  </script>
+    </head>
+    <body>
+      <button onclick="setStyle()">Activate color</button>
+      <button onclick="resetStyle()">Deactivate</button>
+      <div id="text-container">
+          <span class='word' known='yes'>小镇</span>
+          <span class='word' known='no'>一共</span>
+          <span class='word' known='no'>一个</span>
+          <span class='word' known='no'>学校</span>
+          <span class='word' known='no'>小镇</span>
+      </div>
+
+      <nav id="context-menu" class="context-menu">
+        <ul class="context-menu__items">
+          <li class="context-menu__item">
+            <a href="#" class="context-menu__link" data-action="Add">
+              <i class="fa fa-add"></i> Add to Known Words
+            </a>
+          </li>
+          <li class="context-menu__item">
+            <a href="#" class="context-menu__link" data-action="Remove">
+              <i class="fa fa-rem"></i> Remove from Known Words
+            </a>
+          </li>
+          <li class="context-menu__item">
+            <a href="#" class="context-menu__link" data-action="Search">
+              <i class="fa fa-sea"></i> Search In Text
+            </a>
+          </li>
+        </ul>
+      </nav>
+</body>
+<tail>
+    <script type="text/javascript" src="initword.js" charset="utf-8"></script>
+    <script type="text/javascript" src="contextmenu.js"></script>
+</tail>
+
+</html>

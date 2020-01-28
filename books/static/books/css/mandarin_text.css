@@ -134,20 +134,10 @@ table tr a {
     margin-right:20px;
 }
 
-#book-text{
+/*#book-text{
     font-size: 0px;
-}
+}*/
 
-.tooltip {
-  font-size: 24px;
-  margin-top: 5px;
-  position: relative;
-  display: inline-block;
-  style=margin-block-start: 0em;
-  margin-block-end: 0em;
-  /*border-bottom: 0px dotted black;*/
-
-}
 
 .punctuation {
   font-size: 24px;
@@ -158,11 +148,23 @@ table tr a {
   margin-block-end: 0em;
 }
 
+
+/* ADD NEW TOOLTIP JS*/
+.word {
+  font-size: 24px;
+  margin-top: 5px;
+  position: relative;
+  style=margin-block-start: 0em;
+  margin-block-end: 0em;
+  /*border-bottom: 0px dotted black;*/
+
+}
+
+
 .tooltip .tooltiptext {
   visibility: hidden;
   position: absolute;
-  display: inline-block;
-  font-size: 0px;
+  font-size: 14px;
   width: 140px;
 /*  background-color: #555;*/
   background-color:#FFFFCE;
@@ -188,6 +190,8 @@ table tr a {
   visibility: visible;
 }
 
+
+
 .tt-hanzi {
   font-size:24px;
   font-weight:500;
@@ -202,10 +206,12 @@ table tr a {
 .tt-def {
   font-size:16px;
   font-weight:500;
+  text-align:left;
 /*  float: left*/
 }
 
-
-
-
+.tooltiptext p {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
 

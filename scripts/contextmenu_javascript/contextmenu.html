@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="contextmenu.css">
+    </head>
+    <body>
+      <ul class="tasks">
+        <li class="task" data-id="3">
+          <div class="task__content">
+            Go To Grocery
+          </div>
+          <div class="task__actions">
+            <i class="fa fa-eye"></i>
+            <i class="fa fa-edit"></i>
+            <i class="fa fa-times"></i>
+          </div>
+        </li>
+        <li class="task" data-id="2">
+          <div class="task__content">
+            Type Some Code
+          </div>
+          <div class="task__actions">
+            <i class="fa fa-eye"></i>
+            <i class="fa fa-edit"></i>
+            <i class="fa fa-times"></i>
+          </div>
+        </li>
+        <li class="task" data-id="1">
+          <div class="task__content">
+            Build An App
+          </div>
+          <div class="task__actions">
+            <i class="fa fa-eye"></i>
+            <i class="fa fa-edit"></i>
+            <i class="fa fa-times"></i>
+          </div>
+        </li>
+        <!-- more task items here... -->
+      </ul>
+
+    <nav id="context-menu" class="context-menu">
+      <ul class="context-menu__items">
+        <li class="context-menu__item">
+          <a href="#" class="context-menu__link" data-action="View">
+            <i class="fa fa-eye"></i> View Task
+          </a>
+        </li>
+        <li class="context-menu__item">
+          <a href="#" class="context-menu__link" data-action="Edit">
+            <i class="fa fa-edit"></i> Edit Task
+          </a>
+        </li>
+        <li class="context-menu__item">
+          <a href="#" class="context-menu__link" data-action="Delete">
+            <i class="fa fa-times"></i> Delete Task
+          </a>
+        </li>
+      </ul>
+    </nav>
+</body>
+<tail>
+    <script type="text/javascript" src="contextmenu.js"></script>
+</tail>
+
+</html>

@@ -8,4 +8,6 @@ urlpatterns = [
     path('books/<language>/<id_book>/<int:reader_chapter>', views.show_chapter),
     path('books/<language>/<id_book>/statistics/', views.show_statistics),
     path('books/<language>/<id_book>/search/', views.show_search),
+    path('ajax_test/', views.ajax_test),
+    path('send_ajax_json/', views.send_ajax_json),
 ]

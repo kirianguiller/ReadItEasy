@@ -5,28 +5,7 @@
 
 {% block extra_head%}
     <link rel="stylesheet" type="text/css" href="{% static 'books/css/mandarin_text.css' %}">
-    <script type="text/javascript">
-
-    var current_clicked_token = '';
-
-        function getClickedToken(obj) {
-
-        if (current_clicked_token !== "") {
-            console.log(current_clicked_token)
-        }
-
-        current_clicked_token = obj.getAttribute("token")
-        console.log(current_clicked_token)
-        console.log(obj.hasAttribute('token'));
-
-        var element = document.getElementById(current_clicked_token);
-        element.classList.add("current");
-        element.scrollIntoView({
-                            behavior: "auto",
-                            block:"center",
-                            });
-    }
-    </script>
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -48,20 +27,9 @@
                 <br>
                 {% else %}
                     {% if list_line == 'punctuation'%}
-                        <p class="punctuation">{{token}}</p>
+                        <span class="punctuation">{{token}}</span>
                     {% else %}
-                        <p class="tooltip" onclick="getClickedToken(this)" token="{{token}}">{{token}}
-                            <span class="tooltiptext">
-                                <span class="tt-hanzi">{{list_line.0}} [{{list_line.1}}]</span>
-                                <br>
-                                <span class="tt-fayin">{{list_line.2}}</span>
-                                <br>
-                                {% for def in list_line.3 %}
-                                <br>
-                                <span class="tt-def">- {{def}}</span>
-                                {% endfor %}
-                            </span>
-                        </p>
+                        <span class="word">{{token}}</span>
                     {% endif %}
 
                 {% endif %}
@@ -77,43 +45,9 @@
         </div>
     </div>
 
-    <div id="right-div">
-        <div id="right-upper">
-            <table id="table-words">
-                <thead>
-                    <tr>
-                        <th>Char</th>
-                        <th>Book Rank</th>
-                        <th>Book Freq</th>
-                        <th>Corpus Rank</th>
-                        <th>Corpus Freq</th>
-                    </tr>
-                </thead>
-                {% for char, book_rel_freq, corpus_rank, corpus_rel_freq in list_words_stats %}
-                <tr id="{{char}}">
-                    <td><a href="/dictionary/mandarin/{{char}}" target="_blank">{{ char }}</a></td>
-                    <td>{{ forloop.counter0 }}</td>
-                    <td>{{ book_rel_freq }}</td>
-                    <td>{{ corpus_rank }}</td>
-                    <td>{{ corpus_rel_freq }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-         </div>
+    <script type="text/javascript" src="{% static 'books/js/tooltip.js' %}" charset="utf-8"></script>
+    <script type="text/javascript" src="{% static 'books/js/scrollToClickedWord.js' %}" charset="utf-8"></script>
 
-        <div id="right-lower">
-
-            <div id="href-statistics">
-                <a class="button" href="/books/{{language}}/{{id_book}}/statistics" target="_blank">HSK Statistics</a>
-            </div>
-            <div id="search-div">
-                <form method="post" target="_blank" action="search/" id="search-form">{% csrf_token %}
-                    <input type="text" id="id_query" name="query" placeholder="Enter text to search">
-                </form>
-                <button type="submit" form="search-form" value="Submit" id="search-button">search</button>
-            </div>
-        </div>
-    </div>
 
 
 
