@@ -1,10 +1,22 @@
+h2 {
+  font-size: 18px;
+}
+
+h3 {
+  font-size: 14px;
+}
+
 .content{
     padding:0;
 }
 
 #right-div{
     max-width: 40%;
-    height: 100%;
+/*    height: 100%;*/
+    height: calc(100% - 60px);
+    overflow-y: auto;
+    scrollbar-color: rgba(0,0,0,0.2) transparent;
+    scrollbar-width: thin;
     position: fixed;
     top: 60px;
     right: 0px;
@@ -20,29 +32,51 @@
 }
 
 #right-upper{
-    overflow-y: auto;
+/*    overflow-y: auto;
     scrollbar-color: rgba(0,0,0,0.2) transparent;
     scrollbar-width: thin;
-    max-height: calc(100% - 160px);
+    max-height: calc(100% - 160px);*/
 /*    bottom: 0px;*/
-    padding-bottom:0px;
+/*    padding-bottom:0px;*/
 }
 
+td {
+  padding: 5px;
+}
+
+#right-lower{
+/*    overflow-y: auto;
+    scrollbar-color: rgba(0,0,0,0.2) transparent;
+    scrollbar-width: thin;*/
+/*    max-height: 60%;*/
+/*    bottom:10px;*/
+
+
+/*    max-height: 70%;*/
+/*    bottom: 0px;*/
+
+/*    height:40%;*/
+/*    background-color: white;*/
+/*    height: 100px;
+    padding-top: 0px;*/
+/*    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;*/
+}
+
+
 table th {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
+  background-color: #1976D2;
+  color: #fff;
+/*  position: -webkit-sticky;
+  position: sticky;*/
+/*  top: 0;*/
 }
 
 table {
   border-collapse: collapse;
-  margin: 0 0 20px 0;
+  font-size:20px;
   width: 100%;
-}
-
-th {
-  background-color: #1976D2;
-  color: #fff;
 }
 
 table tr {
@@ -53,9 +87,14 @@ table tr:nth-child(odd) {
   background-color: #BBDEFB;
 }
 
+
+
+
+
 table tr a {
   text-decoration: none;
 }
+
 
 .current {
     color: red !important;
@@ -65,15 +104,7 @@ table tr a {
     color: red !important;
 }
 
-#right-lower{
-/*    height:40%;*/
-    background-color: white;
-    height: 100px;
-    padding-top: 0px;
-    display: flex;
-    justify-content: space-evenly;
-    flex-direction: column;
-}
+
 
 /*.box {
     box-sizing: border-box;
@@ -123,6 +154,7 @@ table tr a {
 #left-div{
     max-width: 60%;
     position:relative;
+    padding:30px;
 }
 
 #book-content {
@@ -151,6 +183,7 @@ table tr a {
 
 /* ADD NEW TOOLTIP JS*/
 .word {
+  margin: 0 5px 0 0;
   font-size: 24px;
   margin-top: 5px;
   position: relative;
@@ -159,59 +192,3 @@ table tr a {
   /*border-bottom: 0px dotted black;*/
 
 }
-
-
-.tooltip .tooltiptext {
-  visibility: hidden;
-  position: absolute;
-  font-size: 14px;
-  width: 140px;
-/*  background-color: #555;*/
-  background-color:#FFFFCE;
-  color: #000;
-  text-align: center;
-  border-radius: 5px;
-  border-color: red;
-  border: 1px solid black;
-  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-  padding: 5px 10px 10px 10px;
-  z-index: 1;
-  top: 135%;
-  left: 50%;
-  margin-left: -80px;
-}
-
-.tooltip:hover {
-  background-color: #ebca71;
-  cursor: pointer;
-}
-
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-}
-
-
-
-.tt-hanzi {
-  font-size:24px;
-  font-weight:500;
-
-}
-
-.tt-fayin {
-  font-size: 18px;
-  font-weight:600;
-}
-
-.tt-def {
-  font-size:16px;
-  font-weight:500;
-  text-align:left;
-/*  float: left*/
-}
-
-.tooltiptext p {
-    margin-top: 4px;
-    margin-bottom: 4px;
-}
-

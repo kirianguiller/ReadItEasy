@@ -1,55 +1,160 @@
 {% extends 'ReadItEasy/base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block title %}{{id_book}}{% endblock %}
 
 {% block extra_head%}
     <link rel="stylesheet" type="text/css" href="{% static 'books/css/mandarin_text.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'books/css/tooltip.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'books/css/contextmenu.css' %}">
     <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 {% endblock %}
 
 {% block content %}
- <div id="left-div" >
+<div id="left-div" >
 
-        <div class="book-content">
-            <header><h1>{{id_book}}</h1></header>
-            <div id="chapter-nav">
-                {% if previous_chapter != 0 %}
-                <a class="left-nav" href="{{previous_chapter}}">previous chapter</a>
-                {% endif %}
-                <a class="right-nav" href="{{next_chapter}}">next chapter</a>
-            </div>
-            <h2>{{chapter_name}}</h2>
-
-            <div id="book-text">
-                {% for token, list_line in zip_list %}
-                {% if token == '@$$@' %}
-                <br>
-                {% else %}
-                    {% if list_line == 'punctuation'%}
-                        <span class="punctuation">{{token}}</span>
-                    {% else %}
-                        <span class="word">{{token}}</span>
-                    {% endif %}
-
-                {% endif %}
-                {% endfor %}
-            </div>
-            <br>
-            <div class="chapter-nav">
-                {% if previous_chapter != 0 %}
-                <a class="left-nav" href="{{previous_chapter}}">previous chapter</a>
-                {% endif %}
-                <a class="right-nav" href="{{next_chapter}}">next chapter</a>
-            </div>
-        </div>
+  <div class="book-content">
+    <header><h1 id="id-book">{{id_book}}</h1></header>
+    <div id="chapter-nav">
+      {% if previous_chapter != 0 %}
+      <a class="left-nav" href="{{previous_chapter}}">previous chapter</a>
+      {% endif %}
+      <a class="right-nav" href="{{next_chapter}}">next chapter</a>
     </div>
 
-    <script type="text/javascript" src="{% static 'books/js/tooltip.js' %}" charset="utf-8"></script>
-    <script type="text/javascript" src="{% static 'books/js/scrollToClickedWord.js' %}" charset="utf-8"></script>
+    <h2>{{chapter_name}}</h2>
+    <div id="book-text">
+      {% for token, list_line in zip_list %} {% if token == '@$$@' %}<br>{% else %}{% if list_line == 'punctuation'%}<span class="punctuation">{{token}}</span>{% else %}<span class="word" known="{{list_line}}" content="{{token}}">{{token}}</span>{% endif %}{% endif %}{% endfor %}
+    </div>
+    <div class="chapter-nav">
+      {% if previous_chapter != 0 %}
+      <a class="left-nav" href="{{previous_chapter}}">previous chapter</a>
+      {% endif %}
+      <a class="right-nav" href="{{next_chapter}}">next chapter</a>
+    </div>
+  </div>
+</div>
+
+<div id="right-div" >
+
+  <div id="buttons__known-words">
+    <button onclick="setStyle()">Activate color</button>
+    <button onclick="resetStyle()">Deactivate</button>
+  </div>
+
+    <div id="buttons__segmentation-gap">
+    <button onclick="setSegStyle()">Activate segmentation</button>
+    <button onclick="resetSegStyle()">Deactivate</button>
+  </div>
+
+  <div>
+    <form onsubmit="return removeToken()" id="changeTokenization__form">
+      <input type="text" id="changeTokenization__input" name="text-input"/>
+      <input type="submit" value="submit"/>
+
+    </form>
+  </div>
+
+  <div id="right-upper">
+
+    <h2>Book Statistics</h2>
+    <table>
+      <tr>
+        <th></th>
+        <th>book</th>
+        <th>user</th>
+        <th>ratio</th>
+      </tr>
+      <tr>
+        <th>tokens</th>
+        <td id="n-book-tokens">{{book_stats.n_book_tokens}}</td>
+        <td>{{book_stats.n_user_tokens}}</td>
+        <td>{{ book_stats.n_user_tokens|as_percentage_of:book_stats.n_book_tokens }}</td>
+      </tr>
+      <tr>
+        <th>types</th>
+        <td>{{book_stats.n_book_types}}</td>
+        <td>{{book_stats.n_user_types}}</td>
+        <td>{{ book_stats.n_user_types|as_percentage_of:book_stats.n_book_types }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div id="right-lower">
+    <h2>Word</h2>
+    <table>
+      <tr>
+        <th>abs freq book</th>
+
+        <th>rank in book</th>
+        <th>rank in corpus</th>
 
 
+        <th>rel freq book</th>
+        <th>rel freq corpus</th>
+      </tr>
+      <tr>
+        <td id="abs-book-freq">Na</td>
+
+        <td id="book-rank">Na</td>
+        <td id="corpus-rank">Na</td>
+
+        <td id="rel-book-freq">Na</td>
+        <td id="rel-corpus-freq">Na</td>
+      </tr>
+    </table>
+    <p id="wi-simp">simplified</p>
+    <p id="wi-trad">traditional</p>
+    <p id="wi-pron">pronunciation</p>
+    <p id="wi-def">definitions</p>
+    <p>hsk</p>
+
+  </div>
+</div>
 
 
+<nav id="context-menu" class="context-menu">
+  <ul class="context-menu__items">
+    <li class="context-menu__item">
+      <a href="#" class="context-menu__link" data-action="Add">
+        <i class="fa fa-add"></i> Add to known words
+      </a>
+    </li>
+    <li class="context-menu__item">
+      <a href="#" class="context-menu__link" data-action="Remove">
+        <i class="fa fa-rem"></i> Remove from known words
+      </a>
+    </li>
+    <li class="context-menu__item">
+      <a href="#" class="context-menu__link" data-action="Info">
+        <i class="fa fa-inf"></i>More information
+      </a>
+    </li>
+    <li class="context-menu__item">
+      <a href="#" class="context-menu__link" data-action="Tokenize">
+        <i class="fa fa-tok"></i>Tokenize
+      </a>
+    </li>
+    <li class="context-menu__item">
+      <a href="#" class="context-menu__link" data-action="Search">
+        <i class="fa fa-sea"></i>Search in text
+      </a>
+    </li>
+    <li class="context-menu__item">
+      <a href="#" class="context-menu__link" data-action="Copy">
+        <i class="fa fa-cop"></i>Copy word
+      </a>
+    </li>
+  </ul>
+</nav>
+<script type="text/javascript" src="{% static 'books/js/showKnownWords.js' %}" charset="utf-8"></script>
+<script type="text/javascript" src="{% static 'books/js/segmentationStyle.js' %}" charset="utf-8"></script>
+<script type="text/javascript" src="{% static 'books/js/tooltip.js' %}" charset="utf-8"></script>
+<script type="text/javascript" src="{% static 'books/js/scrollToClickedWord.js' %}" charset="utf-8"></script>
+<script type="text/javascript" src="{% static 'books/js/contextmenu.js' %}" charset="utf-8"></script>
+<script type="text/javascript" src="{% static 'books/js/leftClickWordInfo.js' %}" charset="utf-8"></script>
+<script type="text/javascript" src="{% static 'books/js/changeTokenization.js' %}" charset="utf-8"></script>
+<!--    <script type="text/javascript" src="{% static 'books/js/initwords.js' %}" charset="utf-8"></script>-->
 
 {% endblock %}

@@ -11,16 +11,31 @@ import time
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 path_dictionary_app = os.path.dirname(os.path.abspath(__file__))
 
+# path languages
+path_languages = os.path.join(BASE_DIR, 'data', 'languages')
+
 # fetch path to different data files
-path_ce_dict = os.path.join(BASE_DIR, 'data', 'dict', 'tab_cedict_ts.u8')
-path_hsk_vocab = os.path.join(BASE_DIR, 'data', 'hsk_vocab', 'HSK1->6.csv')
-path_neighbors_words = os.path.join(BASE_DIR, 'data', 'embeddings', 'chinese_embeddings_552books_neighbors.tsv')
+path_mandarin = os.path.join(path_languages, 'mandarin')
+path_ce_dict = os.path.join(path_mandarin, 'dict', 'tab_cedict_ts.u8')
+path_hsk_vocab = os.path.join(path_mandarin, 'hsk_vocab', 'HSK1->6.csv')
+path_known_words = os.path.join(path_mandarin, 'known_words', 'user001')
+path_neighbors_words = os.path.join(path_mandarin, 'embeddings', 'chinese_embeddings_552books_neighbors.tsv')
+
+
 
 dict_similar_words = {}
 with open(path_neighbors_words, 'r', encoding='utf-8') as infile:
     for line in infile:
         word, *neighbors = line.split('\t')
         dict_similar_words[word] = neighbors
+
+# fetch the user001 known_words
+known_words_user001 = set()
+with open(path_known_words, 'r', encoding='utf-8') as infile:
+    for line in infile:
+        known_words_user001.add(line.rstrip('\n'))
+print(known_words_user001)
+
 
 def show_word_data(request, language, user_word):
     """This view redirect the request for a corresponding valid language function.
@@ -73,3 +88,46 @@ def mandarin_word_data(request, language, user_word):
 
     return render(request, "dictionary/mandarin_word_data.html", context)
 
+
+from django.http import JsonResponse
+
+
+def getAJAX_user_known_word(request):
+    request_word = request.GET.get('word', None)
+    print('REQUEST GET', request.GET)
+    is_known = False
+    print(request_word)
+    if request_word in known_words_user001:
+        print('IIINNN', request_word)
+        is_known = True
+    data = {
+        'is_known': is_known,
+            }
+    return JsonResponse(data)
+
+def getAJAX_add_known_word(request):
+    added_word = request.GET.get('word', None)
+    action = request.GET.get('action', None)
+    print('REQUEST GET', request.GET)
+
+
+    action_done = 'None'
+
+    if action == 'add':
+        known_words_user001.add(added_word)
+        action_done = 'added'
+        print(added_word, action_done)
+
+    elif action == 'remove':
+        known_words_user001.remove(added_word)
+        action_done = 'remove'
+        print(added_word, action_done)
+
+    with open(path_known_words, 'w', encoding='utf-8') as outfile:
+        for word in known_words_user001:
+            outfile.write(word + '\n')
+
+    data = {
+        'action_done': action_done,
+            }
+    return JsonResponse(data)

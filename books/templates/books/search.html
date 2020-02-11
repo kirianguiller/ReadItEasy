@@ -12,6 +12,6 @@
     <h2>{{search}} in the book {{id_book}}</h2>
 
     {% for sentence in matching_sentences %}
-        <p>{{sentence}}</p>
+        <p>{{sentence|safe}}</p>
     {% endfor %}
 {% endblock %}

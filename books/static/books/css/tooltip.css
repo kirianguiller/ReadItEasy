@@ -1,0 +1,59 @@
+.tooltip .tooltiptext {
+  visibility: hidden;
+  position: absolute;
+  font-size: 14px;
+  width: 140px;
+/*  background-color: #555;*/
+  background-color:#FFFFCE;
+  color: #000;
+  text-align: center;
+  border-radius: 5px;
+  border-color: red;
+  border: 1px solid black;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  padding: 5px 10px 10px 10px;
+  z-index: 1;
+  top: 135%;
+  left: 50%;
+  margin-left: -80px;
+}
+
+
+.tooltip:hover {
+  background-color: #ebca71;
+  cursor: pointer;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+
+.tt-hanzi {
+  font-size:24px;
+  font-weight:500;
+
+}
+
+.tt-fayin {
+  font-size: 18px;
+  font-weight:600;
+}
+
+.tt-def {
+  font-size:16px;
+  font-weight:500;
+  text-align:left;
+/*  float: left*/
+}
+
+.tt-hsk {
+  font-size:16px;
+  text-align:right;
+  font-style: italic;
+}
+
+.tooltiptext p {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}

@@ -1,5 +1,7 @@
-* {
-    box-sizing: border-box;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 html {
@@ -29,7 +31,7 @@ hr {
   border-top: 1px solid lightgray;
 }
 
-.nav-bar {
+#site-header {
     top: 0;
     left: 0;
     width: 100%;
@@ -56,19 +58,19 @@ hr {
 }
 
 
-nav div {
+#site-header div {
   flex: auto;
   margin: 0;
   padding: 0.25rem 0.5rem;
 }
 
-nav div a {
+#site-header div a {
   text-decoration: none;
   font-weight: 900;
 
 }
 
-nav ul  {
+#site-header ul  {
   display: flex;
   list-style: none;
   margin: 0;
