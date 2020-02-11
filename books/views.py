@@ -494,8 +494,7 @@ def send_ajax_json(request):
 
 
 def get_book_freqs(word, id_book=None):
-    path_freqs_pickle = "/home/wran/plurital/ReadItEasy/data/languages/mandarin/books/freqs/{}_freqs.pkl"\
-        .format(id_book)
+    path_freqs_pickle = os.path.join(path_freqs, "{}_freqs.pkl".format(id_book))
     with open(path_freqs_pickle, 'rb') as f:
         book_freqs = pickle.load(f)
 
@@ -508,7 +507,7 @@ def get_book_freqs(word, id_book=None):
 
 
 def get_corpus_freqs(word):
-    path_freqs_pickle = "/home/wran/plurital/ReadItEasy/data/languages/mandarin/statistics/corpus_rank_freqs.pkl"
+    path_freqs_pickle = path_corpus_stats
     with open(path_freqs_pickle, 'rb') as f:
         book_freqs = pickle.load(f)
 
