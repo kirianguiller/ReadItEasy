@@ -27,5 +27,6 @@ urlpatterns = [
     path('contact/', views.show_contact),
     path('', include('books.urls')),
     path('', include('dictionary.urls')),
+    path('', include('users.urls')),
 
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)  # for production
+              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)  # for production
