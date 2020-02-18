@@ -202,12 +202,26 @@ def mandarin_chapter(request, language, id_book, reader_chapter):
     # tokenize the chapter
     chapter_tokens = jieba.cut(chapter_txt, HMM=HMM)
 
-    # fetch the user001 known_words
-    known_words_user001 = set()
-    with open(path_known_words, 'r', encoding='utf-8') as infile:
-        for line in infile:
-            known_words_user001.add(line.rstrip('\n'))
-    print(known_words_user001)
+    # # fetch the user001 known_words
+    # known_words_user001 = set()
+    # with open(path_known_words, 'r', encoding='utf-8') as infile:
+    #     for line in infile:
+    #         known_words_user001.add(line.rstrip('\n'))
+    # print(known_words_user001)
+
+    username = None
+    if request.user.is_authenticated:
+        username = request.user.username
+
+    # load user known words
+    user_known_words = set()
+    path_known_words = os.path.join(path_mandarin, 'known_words', '{}_knowns_words.txt'.format(username))
+    if os.path.isfile(path_known_words):
+        with open(path_known_words, 'r', encoding='utf-8') as infile:
+            for line in infile:
+                user_known_words.add(line.rstrip('\n'))
+    print(path_known_words)
+    print("HHH", user_known_words)
 
     # fetch all words and words meta to 2 lists for later use in templates
     list_words_meta = []
@@ -215,12 +229,12 @@ def mandarin_chapter(request, language, id_book, reader_chapter):
     for token in chapter_tokens:
 
         if token not in custom_seperated_words:
-            word, word_meta = process_token(token, known_words_user001)
+            word, word_meta = process_token(token, user_known_words)
             list_words.append(word)
             list_words_meta.append(word_meta)
         else:
             for character in token:
-                word, word_meta = process_token(character, known_words_user001)
+                word, word_meta = process_token(character, user_known_words)
                 list_words.append(word)
                 list_words_meta.append(word_meta)
 
@@ -260,15 +274,15 @@ def mandarin_chapter(request, language, id_book, reader_chapter):
     n_book_tokens = sum(book_freqs.values())
     n_book_types = len(book_types)
 
-    # fetch the user001 known_words
-    known_words_user001 = set()
-    with open(path_known_words, 'r', encoding='utf-8') as infile:
-        for line in infile:
-            known_words_user001.add(line.rstrip('\n'))
+    # # fetch the user001 known_words
+    # known_words_user001 = set()
+    # with open(path_known_words, 'r', encoding='utf-8') as infile:
+    #     for line in infile:
+    #         known_words_user001.add(line.rstrip('\n'))
 
     n_user_tokens = 0
     n_user_types = 0
-    for known_word in known_words_user001:
+    for known_word in user_known_words:
         n_user_tokens += book_freqs.get(known_word,0)
         if known_word in book_types:
             n_user_types += 1
@@ -450,6 +464,11 @@ from django.http import JsonResponse
 
 
 def send_ajax_json(request):
+    username = None
+    if request.user.is_authenticated:
+        username = request.user.username
+    print("USERNAME {}".format(username))
+
     request_word = request.GET.get('word', None)
     is_freqs = request.GET.get('is_freqs', None)
     id_book = request.GET.get('id_book', None)

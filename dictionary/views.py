@@ -106,25 +106,37 @@ def getAJAX_user_known_word(request):
     return JsonResponse(data)
 
 def getAJAX_add_known_word(request):
+    username = None
+    print("ADDD KNOWN WORDSSSS")
+    if request.user.is_authenticated:
+        username = request.user.username
+
     added_word = request.GET.get('word', None)
     action = request.GET.get('action', None)
     print('REQUEST GET', request.GET)
-
-
     action_done = 'None'
 
+    # load user known words
+    user_known_words = set()
+    path_known_words = os.path.join(path_mandarin, 'known_words', '{}_knowns_words.txt'.format(username))
+    if os.path.isfile(path_known_words):
+        with open(path_known_words, 'r', encoding='utf-8') as infile:
+            for line in infile:
+                user_known_words.add(line.rstrip('\n'))
+
     if action == 'add':
-        known_words_user001.add(added_word)
+
+        user_known_words.add(added_word)
         action_done = 'added'
         print(added_word, action_done)
 
     elif action == 'remove':
-        known_words_user001.remove(added_word)
+        user_known_words.remove(added_word)
         action_done = 'remove'
         print(added_word, action_done)
 
     with open(path_known_words, 'w', encoding='utf-8') as outfile:
-        for word in known_words_user001:
+        for word in user_known_words:
             outfile.write(word + '\n')
 
     data = {

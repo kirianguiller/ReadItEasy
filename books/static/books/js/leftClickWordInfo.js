@@ -42,7 +42,8 @@
    */
 
   var idBook = document.getElementById("id-book").textContent
-
+  var content
+  var clickeElIsWord
   /**
    * Initialise our application's code.
    */
@@ -58,7 +59,7 @@
 
   function leftClickListener() {
     document.addEventListener( "click", function(e) {
-      var clickeElIsWord = clickInsideElement( e, "word" );
+      clickeElIsWord = clickInsideElement( e, "word" );
       if ( clickeElIsWord ) {
         content = clickeElIsWord.getAttribute('content')
 
