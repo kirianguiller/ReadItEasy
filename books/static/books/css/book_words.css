@@ -1,40 +1,12 @@
-.container {
-    display: flex;
-    justify-content: space-evenly;
-}
-
-.item {
-    box-sizing: border-box;
-    padding: 50px;
-}
-
-#table-wrapper {
-  width: 100%;
-}
-
-tr[is_known="yes"] {
-    color: #009900;
+tr[is_known="True"] {
+    color: #009900;/*
+    color:#009e28;*/
     }
 
-h1 {
-    color: #009900;
-}
-
-/*tr td {
-  white-space:nowrap;
-}*/
-
-/*table {
-  table-layout: auto;
-  white-space:nowrap;
-  text-align:left;
-}*/
-
-/*
-.zh-char-col {
-  width:4rem;
-}*/
-
+tr[is_known="False"] {
+/*    color: #009900;*/
+    color:#f70010;
+    }
 
 
 table {

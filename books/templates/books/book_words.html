@@ -1,33 +1,32 @@
 {% extends 'ReadItEasy/base.html' %}
 {% load static %}
 
+{% block title %}Statistics - {{id_book}}{% endblock %}
+
 {% block extra_head%}
-  <link rel="stylesheet" type="text/css" href="{% static 'dictionary/css/word_list.css' %}">
-  <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'books/css/book_words.css' %}">
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 {% endblock %}
 
-{% block title %}Mandarin - Words{% endblock %}
-
 {% block content %}
-  <h1>HSK list</h1>
   <div id="table-wrapper">
     <table>
       <tr>
-        <th>sim</th>
-        <th>trad</th>
-        <th>pinyin</th>
-        <th>hsk</th>
         <th>rank</th>
-        <th>def</th>
+        <th>count</th>
+        <th>sim</th>
+        <th>hsk</th>
+        <th>is_known</th>
+        <th>pinyin</th>
       </tr>
-      {% for trad, sim, pinyin_num, pinyin, hsk, def, is_known, rank in ext_dict_zl %}
+      {% for rank, sim, count, pinyin, hsk, is_known in list_of_list %}
       <tr onclick="changeIsKnown(this)" is_known="{{is_known}}" word="{{sim}}">
-        <td>{{sim}}</td>
-        <td>{{trad}}</td>
-        <td>{{pinyin}}</td>
-        <td>{{hsk}}</td>
         <td>{{rank}}</td>
-        <td>{{def}}</td>
+        <td>{{count}}</td>
+        <td>{{sim}}</td>
+        <td>{{hsk}}</td>
+        <td>{{is_known}}</td>
+        <td>{{pinyin}}</td>
       </tr>
       {% endfor %}
     </table>
@@ -52,9 +51,9 @@ document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() =
 
     var word = elt.getAttribute("word");
 
-    if (elt.getAttribute("is_known") == "no") {
+    if (elt.getAttribute("is_known") == "False") {
 
-      elt.setAttribute("is_known", "yes")
+      elt.setAttribute("is_known", "True")
 
       $.ajax({
         url: '/dictionary/ajax_interact_known_word/',
@@ -70,7 +69,7 @@ document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() =
 
     } else {
 
-      elt.setAttribute("is_known", "no")
+      elt.setAttribute("is_known", "False")
       $.ajax({
         url: '/dictionary/ajax_interact_known_word/',
         data: {

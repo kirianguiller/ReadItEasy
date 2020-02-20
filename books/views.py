@@ -280,6 +280,43 @@ def mandarin_chapter(request, language, id_book, reader_chapter):
     }
     return render(request, "books/mandarin_text.html", context)
 
+def show_book_words(request, language, id_book):
+    """
+    This view allow the user to see a table of a book's words and to interact with it
+    """
+    # get the username (if authenticated)
+    username = None
+    if request.user.is_authenticated:
+        username = request.user.username
+
+    # load user known words
+    user_known_words = set()
+    path_known_words = os.path.join(path_mandarin, 'known_words', '{}_knowns_words.txt'.format(username))
+    if os.path.isfile(path_known_words):
+        with open(path_known_words, 'r', encoding='utf-8') as infile:
+            for line in infile:
+                user_known_words.add(line.rstrip('\n'))
+
+    # load the book stats
+    # TODO : deal with the case the stats were never computed
+    path_book_freqs_txt = os.path.join(path_freqs, id_book + '_freqs.txt')
+    list_of_list = []
+    with open(path_book_freqs_txt, 'r', encoding="utf-8") as infile:
+        first_line = infile.readline()
+        n_tokens = float((first_line.rstrip("\n").split("\t")[1]))
+        for line in infile:
+            char, rank, count = line.rstrip("\n").split("\t")
+            _, _, pinyin, _, hsk = cedict.get(char, ["Not Found"]*5)
+            is_known = (char in user_known_words)
+            list_of_list.append([rank, char, count, pinyin, hsk, is_known])
+
+
+
+    context = {
+        "list_of_list" : list_of_list,
+
+    }
+    return render(request, "books/book_words.html", context)
 
 def give_token_meta(token, known_words):
     """

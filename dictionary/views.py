@@ -125,11 +125,9 @@ def mandarin_words_list(request, language):
     df_dict = df_dict[df_dict["hsk"] < 5]
 
     # import the frequency tsv
-    print(path_corpus_stats)
     t1 = time.time()
     df_stats = pd.read_csv(path_corpus_stats, sep='\t', header=None, skiprows=1)
     dict_stats = df_stats.set_index(0).to_dict()[1]
-    print(df_stats.head())
     t2 = time.time()
     print('\n time : ', t2-t1)
 
@@ -147,7 +145,7 @@ def mandarin_words_list(request, language):
 
     # ext_dict_zl = zip(ext_dict_zl, hsk_known_words)
     context = {
-        "ext_dict_zl":ext_dict_zl,
+        "ext_dict_zl": ext_dict_zl,
     }
     return render(request, "dictionary/mandarin_words_list.html", context)
 
