@@ -1,11 +1,12 @@
 # django imports
 from django.shortcuts import render
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from .models import MandarinWord
 
 # base imports
 import os
 import time
+import pandas as pd
 
 # fetch the root project and app path
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -16,11 +17,13 @@ path_languages = os.path.join(BASE_DIR, 'data', 'languages')
 
 # fetch path to different data files
 path_mandarin = os.path.join(path_languages, 'mandarin')
+path_extended_dict = os.path.join(path_mandarin, 'dict', 'extended_dict.u8')
+path_extended_dict_hsk_only = os.path.join(path_mandarin, 'dict', 'extended_dict_hsk_only.u8')
 path_ce_dict = os.path.join(path_mandarin, 'dict', 'tab_cedict_ts.u8')
 path_hsk_vocab = os.path.join(path_mandarin, 'hsk_vocab', 'HSK1->6.csv')
 path_known_words = os.path.join(path_mandarin, 'known_words', 'user001')
 path_neighbors_words = os.path.join(path_mandarin, 'embeddings', 'chinese_embeddings_552books_neighbors.tsv')
-
+path_corpus_stats = os.path.join(path_mandarin, 'statistics', 'corpus_rank_freqs.txt')
 
 
 dict_similar_words = {}
@@ -29,15 +32,15 @@ with open(path_neighbors_words, 'r', encoding='utf-8') as infile:
         word, *neighbors = line.split('\t')
         dict_similar_words[word] = neighbors
 
-# fetch the user001 known_words
-known_words_user001 = set()
-with open(path_known_words, 'r', encoding='utf-8') as infile:
-    for line in infile:
-        known_words_user001.add(line.rstrip('\n'))
-print(known_words_user001)
+# # fetch the user001 known_words
+# known_words_user001 = set()
+# with open(path_known_words, 'r', encoding='utf-8') as infile:
+#     for line in infile:
+#         known_words_user001.add(line.rstrip('\n'))
+# print(known_words_user001)
 
 
-def show_word_data(request, language, user_word):
+def view_word_data(request, language, user_word):
     """This view redirect the request for a corresponding valid language function.
     Currently, only mandarin is supported"""
     if language == 'mandarin':
@@ -89,31 +92,73 @@ def mandarin_word_data(request, language, user_word):
     return render(request, "dictionary/mandarin_word_data.html", context)
 
 
-from django.http import JsonResponse
+def view_words_list(request, language):
+    """This view redirect the request for a corresponding valid language words list.
+    Currently, only mandarin is supported"""
+    if language == 'mandarin':
+        return mandarin_words_list(request, language=language)
+    else:
+        raise Http404
 
 
-def getAJAX_user_known_word(request):
-    request_word = request.GET.get('word', None)
-    print('REQUEST GET', request.GET)
-    is_known = False
-    print(request_word)
-    if request_word in known_words_user001:
-        print('IIINNN', request_word)
-        is_known = True
-    data = {
-        'is_known': is_known,
-            }
-    return JsonResponse(data)
+def mandarin_words_list(request, language):
+    """
+    This view is for showing to the user the hsk words he knows and it allow him to interact
+    with it
+    """
 
-def getAJAX_add_known_word(request):
+    # get the username (if authenticated)
     username = None
-    print("ADDD KNOWN WORDSSSS")
+    if request.user.is_authenticated:
+        username = request.user.username
+
+    # load user known words
+    user_known_words = set()
+    path_known_words = os.path.join(path_mandarin, 'known_words', '{}_knowns_words.txt'.format(username))
+    if os.path.isfile(path_known_words):
+        with open(path_known_words, 'r', encoding='utf-8') as infile:
+            for line in infile:
+                user_known_words.add(line.rstrip('\n'))
+
+    # import the dict and zip the columns for easy access in template
+    df_dict = pd.read_csv(path_extended_dict_hsk_only, sep='\t', header=0)
+    df_dict = df_dict[df_dict["hsk"] < 5]
+
+    # import the frequency tsv
+    print(path_corpus_stats)
+    t1 = time.time()
+    df_stats = pd.read_csv(path_corpus_stats, sep='\t', header=None, skiprows=1)
+    dict_stats = df_stats.set_index(0).to_dict()[1]
+    print(df_stats.head())
+    t2 = time.time()
+    print('\n time : ', t2-t1)
+
+    # build the hsk known word list
+    words_corpus_rank = []
+    hsk_known_words = []
+    for sim in df_dict['sim']:
+        if sim in user_known_words:
+            hsk_known_words.append("yes")
+        else:
+            hsk_known_words.append("no")
+        words_corpus_rank.append(dict_stats.get(sim, "-"))
+
+    ext_dict_zl = zip(*[df_dict[col] for col in df_dict] + [hsk_known_words]+[words_corpus_rank])
+
+    # ext_dict_zl = zip(ext_dict_zl, hsk_known_words)
+    context = {
+        "ext_dict_zl":ext_dict_zl,
+    }
+    return render(request, "dictionary/mandarin_words_list.html", context)
+
+
+def ajax_interact_known_word(request):
+    username = None
     if request.user.is_authenticated:
         username = request.user.username
 
     added_word = request.GET.get('word', None)
     action = request.GET.get('action', None)
-    print('REQUEST GET', request.GET)
     action_done = 'None'
 
     # load user known words
@@ -125,7 +170,6 @@ def getAJAX_add_known_word(request):
                 user_known_words.add(line.rstrip('\n'))
 
     if action == 'add':
-
         user_known_words.add(added_word)
         action_done = 'added'
         print(added_word, action_done)

@@ -1,0 +1,86 @@
+{% extends 'ReadItEasy/base.html' %}
+{% load static %}
+
+{% block extra_head%}
+  <link rel="stylesheet" type="text/css" href="{% static 'dictionary/css/word_list.css' %}">
+  <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+{% endblock %}
+
+{% block title %}Mandarin - Words{% endblock %}
+
+{% block content %}
+  <h1>HSK list</h1>
+    <table>
+      <tr>
+        <th class="zh-char-col">sim</th>
+        <th class="zh-char-col">trad</th>
+        <th>pinyin</th>
+        <th>hsk</th>
+        <th>rank</th>
+        <th>def</th>
+      </tr>
+      {% for trad, sim, pinyin_num, pinyin, hsk, def, is_known, rank in ext_dict_zl %}
+      <tr onclick="changeIsKnown(this)" is_known="{{is_known}}" word="{{sim}}">
+        <td>{{sim}}</td>
+        <td>{{trad}}</td>
+        <td>{{pinyin}}</td>
+        <td>{{hsk}}</td>
+        <td>{{rank}}</td>
+        <td>{{def}}</td>
+      </tr>
+      {% endfor %}
+    </table>
+<script>
+const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+
+const comparer = (idx, asc) => (a, b) => ((v1, v2) =>
+    v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
+    )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+
+// do the work...
+document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
+    const table = th.closest('table');
+    Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
+        .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+        .forEach(tr => table.appendChild(tr) );
+})));
+
+
+  function changeIsKnown(elt) {
+
+    var word = elt.getAttribute("word");
+
+    if (elt.getAttribute("is_known") == "no") {
+
+      elt.setAttribute("is_known", "yes")
+
+      $.ajax({
+        url: '/dictionary/ajax_interact_known_word/',
+        data: {
+          'word': word,
+          'action': 'add',
+        },
+        dataType: 'json',
+        success: function (data) {
+          console.log('the word : ' + word + ' was added to the known words list');
+        }
+      });
+
+    } else {
+
+      elt.setAttribute("is_known", "no")
+      $.ajax({
+        url: '/dictionary/ajax_interact_known_word/',
+        data: {
+          'word': word,
+          'action': 'remove',
+        },
+        dataType: 'json',
+        success: function (data) {
+          console.log('the word : ' + word + ' was removed from the known words list');
+        }
+      });
+    }
+  }
+</script>
+{% endblock %}

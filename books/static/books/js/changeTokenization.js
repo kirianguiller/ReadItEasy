@@ -7,7 +7,7 @@ function forceTokenize(word) {
         },
         dataType: 'json',
         success: function (data) {
-                console.log("success form");
+                console.log("the word "+word+" will now be tokenized");
                 location.reload();
         }
     })
