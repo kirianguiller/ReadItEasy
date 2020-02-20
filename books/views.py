@@ -211,7 +211,7 @@ def mandarin_chapter(request, language, id_book, reader_chapter):
     path_book_freqs_txt = os.path.join(path_freqs, id_book+'_freqs.txt')
     book_freqs = {}
     if os.path.isfile(path_book_freqs_txt):
-        with open(path_book_freqs_txt, 'r') as infile:
+        with open(path_book_freqs_txt, 'r', encoding="utf-8") as infile:
             for n, line in enumerate(infile):
                 if n == 0:
                     _, n_book_tokens, _, n_book_types = line.rstrip("\n").split("\t")
@@ -226,7 +226,7 @@ def mandarin_chapter(request, language, id_book, reader_chapter):
         book_freqs = rmv_not_chinese(book_freqs)
         n_book_tokens = sum(book_freqs.values())
         n_book_types = len(set(book_freqs.keys()))
-        with open(path_book_freqs_txt, "w") as outfile:
+        with open(path_book_freqs_txt, "w", encoding="utf-8") as outfile:
             outfile.write("#tokens:\t{}\ttype:\t{}\n".format(n_book_tokens, n_book_types))
             for rank, (char, freq) in enumerate(book_freqs.most_common()):
                 outfile.write("{}\t{}\t{}\n".format(char, rank, freq))
@@ -500,7 +500,7 @@ def ajax_word_data(request):
 
 def word_freqs_from_freq_txt(word, path_to_freq_txt):
     """get the word freqs from a freq.txt file"""
-    with open(path_to_freq_txt, 'r') as infile:
+    with open(path_to_freq_txt, 'r', encoding="utf-8") as infile:
         first_line = infile.readline()
         n_tokens = 0.
         if "tokens" in first_line:
