@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'webpack_loader',           # VUEJS
 ]
 
 MIDDLEWARE = [
@@ -129,8 +130,16 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"), #added
+    os.path.join(BASE_DIR, 'assets'), # VUEJS
 )
 
 LOGIN_REDIRECT_URL = 'profile'
 
 
+### VUEJS webpack_loader
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+    }
+}

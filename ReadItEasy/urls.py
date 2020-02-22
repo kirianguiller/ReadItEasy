@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+
+from django.conf.urls import url
+from django.views.generic import TemplateView
+
 from django.conf import settings # for production
 from django.conf.urls.static import static # for production
 
@@ -28,5 +32,6 @@ urlpatterns = [
     path('', include('books.urls')),
     path('', include('dictionary.urls')),
     path('', include('users.urls')),
+    url('index/', TemplateView.as_view(template_name='ReadItEasy/index.html'), name='index'),
 
-              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)  # for production
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)  # for production
