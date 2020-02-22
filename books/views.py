@@ -17,9 +17,9 @@ from .utils.chinese_utils import rmv_not_chinese, find_chapter_separator
 
 # jieba initialization
 jieba.initialize()
-HMM = True
+HMM = False
 custom_seperated_words = []
-
+#我要
 
 
 # fetch the root project and app path
