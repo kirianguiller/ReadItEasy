@@ -19,12 +19,13 @@
 
             {% if user.is_authenticated %}
             <li><a class="nav-link" href="/logout">Log Out</a>
-            <li><a class="nav-link" href="/profile">Profile</a>
+            <li><a class="nav-link" href="/profile">{{user.get_username}}'s profile</a>
             {% else %}
             <li><a class="nav-link" href="/register">Register</a>
             <li><a class="nav-link" href="/login">Log In</a>
             {% endif %}
         </ul>
+
     </nav>
     <section class="content">
         {% block content %}{% endblock %}
