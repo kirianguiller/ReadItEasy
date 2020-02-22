@@ -25,63 +25,18 @@
         <td>{{count}}</td>
         <td>{{sim}}</td>
         <td>{{hsk}}</td>
-        <td>{{is_known}}</td>
+        <td class="known">{{is_known}}</td>
         <td>{{pinyin}}</td>
       </tr>
       {% endfor %}
     </table>
   </div>
-<script>
-const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
-
-const comparer = (idx, asc) => (a, b) => ((v1, v2) =>
-    v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
-    )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
-
-// do the work...
-document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
-    const table = th.closest('table');
-    Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
-        .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
-        .forEach(tr => table.appendChild(tr) );
-})));
 
 
-  function changeIsKnown(elt) {
+{% endblock %}
 
-    var word = elt.getAttribute("word");
 
-    if (elt.getAttribute("is_known") == "False") {
-
-      elt.setAttribute("is_known", "True")
-
-      $.ajax({
-        url: '/dictionary/ajax_interact_known_word/',
-        data: {
-          'word': word,
-          'action': 'add',
-        },
-        dataType: 'json',
-        success: function (data) {
-          console.log('the word : ' + word + ' was added to the known words list');
-        }
-      });
-
-    } else {
-
-      elt.setAttribute("is_known", "False")
-      $.ajax({
-        url: '/dictionary/ajax_interact_known_word/',
-        data: {
-          'word': word,
-          'action': 'remove',
-        },
-        dataType: 'json',
-        success: function (data) {
-          console.log('the word : ' + word + ' was removed from the known words list');
-        }
-      });
-    }
-  }
-</script>
+{% block scripts %}
+<script type="text/javascript" src="{% static 'dictionary/js/orderableTable.js' %}" charset="utf-8"></script>
+<script type="text/javascript" src="{% static 'dictionary/js/changeTableWordsKnown.js' %}" charset="utf-8"></script>
 {% endblock %}

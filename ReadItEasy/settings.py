@@ -59,7 +59,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             # Cette ligne ajoute le dossier templates/ à la racine du projet
-            os.path.join(PROJECT_DIR, 'templates'), #added
+            os.path.join(BASE_DIR, 'templates'), #added
         ],
         'APP_DIRS': True,   # allow to factorize the code by app
         'OPTIONS': {
@@ -72,7 +72,6 @@ TEMPLATES = [
         },
     },
 ]
-
 WSGI_APPLICATION = 'ReadItEasy.wsgi.application'
 
 
@@ -128,7 +127,7 @@ STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 STATIC_URL = '/static/'
 
 
-STATICFILES_DIRS = (                    #added
+STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"), #added
 )
 

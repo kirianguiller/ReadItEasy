@@ -15,74 +15,29 @@
       <tr>
         <th>sim</th>
         <th>trad</th>
-        <th>pinyin</th>
         <th>hsk</th>
         <th>rank</th>
+        <th>is_known</th>
+        <th>pinyin</th>
         <th>def</th>
       </tr>
       {% for trad, sim, pinyin_num, pinyin, hsk, def, is_known, rank in ext_dict_zl %}
       <tr onclick="changeIsKnown(this)" is_known="{{is_known}}" word="{{sim}}">
         <td>{{sim}}</td>
         <td>{{trad}}</td>
-        <td>{{pinyin}}</td>
         <td>{{hsk}}</td>
         <td>{{rank}}</td>
+        <td class="known">{{is_known}}</td>
+        <td>{{pinyin}}</td>
         <td>{{def}}</td>
       </tr>
       {% endfor %}
     </table>
   </div>
-<script>
-const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
-
-const comparer = (idx, asc) => (a, b) => ((v1, v2) =>
-    v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
-    )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
-
-// do the work...
-document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
-    const table = th.closest('table');
-    Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
-        .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
-        .forEach(tr => table.appendChild(tr) );
-})));
+{% endblock %}
 
 
-  function changeIsKnown(elt) {
-
-    var word = elt.getAttribute("word");
-
-    if (elt.getAttribute("is_known") == "no") {
-
-      elt.setAttribute("is_known", "yes")
-
-      $.ajax({
-        url: '/dictionary/ajax_interact_known_word/',
-        data: {
-          'word': word,
-          'action': 'add',
-        },
-        dataType: 'json',
-        success: function (data) {
-          console.log('the word : ' + word + ' was added to the known words list');
-        }
-      });
-
-    } else {
-
-      elt.setAttribute("is_known", "no")
-      $.ajax({
-        url: '/dictionary/ajax_interact_known_word/',
-        data: {
-          'word': word,
-          'action': 'remove',
-        },
-        dataType: 'json',
-        success: function (data) {
-          console.log('the word : ' + word + ' was removed from the known words list');
-        }
-      });
-    }
-  }
-</script>
+{% block scripts %}
+<script type="text/javascript" src="{% static 'dictionary/js/orderableTable.js' %}" charset="utf-8"></script>
+<script type="text/javascript" src="{% static 'dictionary/js/changeTableWordsKnown.js' %}" charset="utf-8"></script>
 {% endblock %}

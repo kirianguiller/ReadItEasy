@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %} - ReadItEasy</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'ReadItEasy/css/style.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+    <nav id="site-header">
+      <div><a href="/">ReadItEasy</a></div>
+        <ul>
+            <li>
+                <form id="searchWord__form">
+                    <input type="text" id="searchWord__input" name="text-input"/>
+                    <input type="submit" value="Search"/>
+                </form>
+            </li>
+            <li><a class="nav-link" href="/books">Books</a>
+            <li><a class="nav-link" href="/contact">Contact</a>
+
+            {% if user.is_authenticated %}
+            <li><a class="nav-link" href="/logout">Log Out</a>
+            <li><a class="nav-link" href="/profile">{{user.get_username}}'s profile</a>
+            {% else %}
+            <li><a class="nav-link" href="/register">Register</a>
+            <li><a class="nav-link" href="/login">Log In</a>
+            {% endif %}
+        </ul>
+
+    </nav>
+    <section class="content">
+        {% block content %}{% endblock %}
+    </section>
+
+</body>
+<scipts>
+    <script type="text/javascript" src="{% static 'ReadItEasy/js/submitSearchWord.js' %}" charset="utf-8"></script>
+
+    {% block scripts %}{% endblock %}
+</scipts>
+</html>

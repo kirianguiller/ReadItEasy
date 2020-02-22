@@ -17,7 +17,7 @@ from .utils.chinese_utils import rmv_not_chinese, find_chapter_separator
 
 # jieba initialization
 jieba.initialize()
-HMM = False
+HMM = True
 custom_seperated_words = []
 #我要
 

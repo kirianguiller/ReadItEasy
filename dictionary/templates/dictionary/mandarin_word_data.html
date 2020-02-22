@@ -9,7 +9,6 @@
 
 
 {% block content %}
-<h1>WOWLOSL</h1>
     <div class='container' id="dict-content">
 
         <div class="item">
@@ -41,7 +40,7 @@
             <h2>Relative words</h2>
             {% if user_relative_words != False %}
             {% for relative_word in user_relative_words %}
-                <span><a href="/dictionary/mandarin/{{relative_word}}" target="_blank">{{relative_word}}</a></span>
+                <span><a href="/dictionary/mandarin/{{relative_word}}" >{{relative_word}}</a></span>
                 <br>
             {% endfor %}
             {% endif %}

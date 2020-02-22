@@ -135,10 +135,7 @@ def mandarin_words_list(request, language):
     words_corpus_rank = []
     hsk_known_words = []
     for sim in df_dict['sim']:
-        if sim in user_known_words:
-            hsk_known_words.append("yes")
-        else:
-            hsk_known_words.append("no")
+        hsk_known_words.append((sim in user_known_words))
         words_corpus_rank.append(dict_stats.get(sim, "-"))
 
     ext_dict_zl = zip(*[df_dict[col] for col in df_dict] + [hsk_known_words]+[words_corpus_rank])

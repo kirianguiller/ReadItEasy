@@ -53,11 +53,13 @@
       <input type="text" id="changeTokenization__input" name="text-input"/>
       <input type="submit" value="submit"/>
     </form>-->
-    <form onsubmit="return removeToken()" id="searchInText__form">
-      <input type="text" id="changeTokenization__input" name="text-input"/>
-      <input type="submit" value="submit"/>
+    <form id="searchInText__form">
+      <input type="text" id="searchInText__input" name="text-input"/>
+      <input type="submit" value="Search"/>
     </form>
   </div>
+
+  <a href="./words">Book Words List</a>
 
   <div id="right-upper">
 
@@ -151,6 +153,13 @@
     </li>
   </ul>
 </nav>
+
+{% endblock %}
+
+
+
+{% block scripts %}
+
 <script type="text/javascript" src="{% static 'books/js/showKnownWords.js' %}" charset="utf-8"></script>
 <script type="text/javascript" src="{% static 'books/js/segmentationStyle.js' %}" charset="utf-8"></script>
 <script type="text/javascript" src="{% static 'books/js/tooltip.js' %}" charset="utf-8"></script>
@@ -158,5 +167,6 @@
 <script type="text/javascript" src="{% static 'books/js/rightClickContextMenu.js' %}" charset="utf-8"></script>
 <script type="text/javascript" src="{% static 'books/js/leftClickWordInfo.js' %}" charset="utf-8"></script>
 <script type="text/javascript" src="{% static 'books/js/changeTokenization.js' %}" charset="utf-8"></script>
+<script type="text/javascript" src="{% static 'books/js/submitSearchInText.js' %}" charset="utf-8"></script>
 
 {% endblock %}

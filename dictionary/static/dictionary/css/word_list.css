@@ -12,8 +12,14 @@
   width: 100%;
 }
 
-tr[is_known="yes"] {
-    color: #009900;
+tr[is_known="True"] {
+    color: #009900;/*
+    color:#009e28;*/
+    }
+
+tr[is_known="False"] {
+/*    color: #009900;*/
+    color:#f70010;
     }
 
 h1 {
