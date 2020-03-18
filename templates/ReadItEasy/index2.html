@@ -1,0 +1,14 @@
+{% load render_bundle from webpack_loader %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Django Vue</title>
+</head>
+<body>
+    <div id="app">
+        <p v-show="1 === 1">test</p>
+        <demo></demo>
+    </div>
+    {% render_bundle 'main' %}
+</body>
+</html>

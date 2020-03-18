@@ -182,3 +182,32 @@ def ajax_interact_known_word(request):
         'action_done': action_done,
             }
     return JsonResponse(data)
+
+
+def api_sentence(request):
+    
+    json = {
+        "sentence":
+            ["四月", "间", "天气", "寒冷", "晴朗", "钟", "敲", "了", "十三", "下",  "。",
+             "温斯顿", "史密斯", "为了", "要", "躲", "晴朗"],
+        # "isKnownDict": {
+        #     "四月": {"form": "四月", "isKnown": "true"},
+        #     "间": {"form": "间", "isKnown": "true"},
+        #     "天气": {"form": "天气", "isKnown": "true"},
+        #     "寒冷": {"form": "寒冷", "isKnown": "false"},
+        #     "晴朗": {"form": "晴朗", "isKnown": "false"},
+        #     "钟": {"form": "钟", "isKnown": "false"},
+        #     "敲": {"form": "敲", "isKnown": "true"},
+        #     "了": {"form": "了", "isKnown": "true"},
+        #     "十三": {"form": "十三", "isKnown": "true"},
+        #     "下": {"form": "下", "isKnown": "true"},
+        #     "。": {"form": "。", "isKnown": "true"},
+        #     "温斯顿": {"form": "温斯顿", "isKnown": "false"},
+        #     "史密斯": {"form": "史密斯", "isKnown": "true"},
+        #     "为了": {"form": "为了", "isKnown": "true"},
+        #     "要": {"form": "要", "isKnown": "true"},
+        #     "躲": {"form": "躲", "isKnown": "true"},
+
+            "isKnownList": [ "isKnown" ]*17
+    }
+    return JsonResponse(json)

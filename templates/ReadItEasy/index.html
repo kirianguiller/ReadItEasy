@@ -5,9 +5,27 @@
     <title>My Django Vue</title>
 </head>
 <body>
+<!--    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
     <div id="app">
+        <p v-show="variable === 'socks'">test [[variable]]</p>
+        <input v-model="variable">
         <demo></demo>
+        <p>[[ variable ]]</p>
     </div>
+
+<!--    <div id="app2">
+        <trtt></trtt>
+
+    </div>-->
+<!--    <script>
+    const app = new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app',
+
+        data: {
+          variable: "socks"
+    }
+});</script>-->
     {% render_bundle 'main' %}
 </body>
 </html>

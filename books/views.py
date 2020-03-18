@@ -550,7 +550,164 @@ def get_w_corpus_freqs(word):
 #     print(corpus_rank, corpus_rel_freq)
 #     return corpus_rank, corpus_rel_freq
 
+def API_mandarin_chapter(request, id_book, reader_chapter):
+    """IMPORTANT View
+    This view will segment the selected book by chapter, tokenize the text, fetch
+    the meta about words inside the text (pronunciation, definition), compute word
+    frequencies and ranks and do some caching for faster loading
+    """
+    t1 = time.time()
+    language = "mandarin"
+    t1 = time.time()
+    # fetch the path to the book
+    path_books_language = os.path.join(path_languages, language, 'books', 'content')
+    path_book = os.path.join(path_books_language, id_book + '.txt')
 
+    # create the cache folder for the book if doesn't exist yet
+    path_book_cache = os.path.join(path_books_cache, language, id_book)
+    if not os.path.isdir(path_book_cache):
+        os.makedirs(path_book_cache)
+
+    # load all the book $$ Can improve a little speed here
+    with open(path_book, 'r', encoding='utf-8') as infile:
+        full_txt = infile.read()
+
+    # get info about chapter seperator so we can segment the text by chapter.
+    # it allow to show the text to the user chapter-wise which is less data consuming
+    # the 'find_chapter_separator()' is located in /utils/chinese_utils.py
+    chapter_separator, list_seps = find_chapter_separator(full_txt)
+    if chapter_separator is False:
+        raise Http404
+    chapters_number = len(list_seps)
+    if reader_chapter > chapters_number:
+        return redirect(show_chapter, language=language, id_book=id_book, reader_chapter=chapters_number)
+
+    # get chapter name and chapter text
+    chapter_name = list_seps[reader_chapter - 1]
+    chapter_txt = re.split('第[一二三四五六七八九十百零0-9]{1,5}'+chapter_separator + '[\n\\s\t]',
+                           full_txt)[reader_chapter].strip()
+
+    # tokenize the chapter
+    chapter_tokens = jieba.cut(chapter_txt, HMM=HMM)
+
+    # get the username (if authenticated)
+    username = None
+    if request.user.is_authenticated:
+        username = request.user.username
+
+    # load user known words
+    user_known_words = set()
+    path_known_words = os.path.join(path_mandarin, 'known_words', '{}_knowns_words.txt'.format(username))
+    if os.path.isfile(path_known_words):
+        with open(path_known_words, 'r', encoding='utf-8') as infile:
+            for line in infile:
+                user_known_words.add(line.rstrip('\n'))
+
+    # fetch all words and words meta to 2 lists for later use in templates
+    list_tokens = []
+    list_metas = []
+    for token in chapter_tokens:
+        if token not in custom_seperated_words:
+            list_tokens.append(token)
+            meta = give_token_meta(token, user_known_words)
+            list_metas.append(meta)
+        else:
+            for character in token:
+                list_tokens.append(token)
+                meta = give_token_meta(character, user_known_words)
+                list_metas.append(meta)
+    tk_meta_zl = zip(list_tokens, list_metas)
+
+
+    ta = time.time()
+    # compute the statistics of the words in the book and cache it for faster reload
+    path_book_freqs_txt = os.path.join(path_freqs, id_book+'_freqs.txt')
+    book_freqs = {}
+    if os.path.isfile(path_book_freqs_txt):
+        with open(path_book_freqs_txt, 'r', encoding="utf-8") as infile:
+            for n, line in enumerate(infile):
+                if n == 0:
+                    _, n_book_tokens, _, n_book_types = line.rstrip("\n").split("\t")
+                    n_book_tokens = int(n_book_tokens)
+                    n_book_types = int(n_book_types)
+                else:
+                    char, rank, freq = line.rstrip("\n").split("\t")
+                    book_freqs[char] = int(freq)
+    else:
+        tokenized_full_text = jieba.cut(full_txt, HMM=HMM)
+        book_freqs = Counter(tokenized_full_text)
+        book_freqs = rmv_not_chinese(book_freqs)
+        n_book_tokens = sum(book_freqs.values())
+        n_book_types = len(set(book_freqs.keys()))
+        with open(path_book_freqs_txt, "w", encoding="utf-8") as outfile:
+            outfile.write("#tokens:\t{}\ttype:\t{}\n".format(n_book_tokens, n_book_types))
+            for rank, (char, freq) in enumerate(book_freqs.most_common()):
+                outfile.write("{}\t{}\t{}\n".format(char, rank, freq))
+
+    tb = time.time()
+    # path_book_freqs_pkl = os.path.join(path_freqs, id_book+'_freqs.pkl')
+    #
+    # if os.path.isfile(path_book_freqs_pkl):
+    #     with open(path_book_freqs_pkl, 'rb') as f:
+    #         book_freqs = pickle.load(f)
+    # else:
+    #     tokenized_full_text = jieba.cut(full_txt, HMM=HMM)
+    #     book_freqs = Counter(tokenized_full_text)
+    #     book_freqs = rmv_not_chinese(book_freqs)
+    #     with open(path_book_freqs_pkl, 'wb') as f:
+    #         pickle.dump(book_freqs, f, pickle.HIGHEST_PROTOCOL)
+    #
+    # book_types = set(book_freqs.keys())
+    #
+    # n_book_tokens = sum(book_freqs.values())
+    # n_book_types = len(book_types)
+
+    tc = time.time()
+
+    print('t1', tb-ta)
+    print('t2', tc-tb)
+    n_user_tokens = 0
+    n_user_types = 0
+    for known_word in user_known_words:
+        n_user_tokens += book_freqs.get(known_word,0)
+        if known_word in book_freqs:
+            n_user_types += 1
+
+    book_stats = {
+        'n_book_tokens': n_book_tokens,
+        'n_book_types': n_book_types,
+        'n_user_tokens': n_user_tokens,
+        'n_user_types': n_user_types,
+    }
+
+    print('\nTIME', time.time()-t1)
+    context = {
+        "id_book": id_book,
+        'tk_meta_zl': tk_meta_zl,
+        'book_stats': book_stats,
+        "chapter_name": chapter_name,
+        "reader_chapter":reader_chapter,
+        "next_chapter":reader_chapter+1,
+        "previous_chapter":reader_chapter-1,
+        'language': language,
+    }
+    # list_tokens = list_tokens[:1000]
+    isKnownDict = {}
+    print("LEN : ", len(list_tokens), len(set(list_tokens)))
+    for token in set(list_tokens):
+        tokenDict = {}
+        tokenDict["form"] = token
+        tokenDict["isKnown"] = "true"
+        isKnownDict[token] = tokenDict
+    json = {
+        "sentence": list_tokens,
+        "isKnownDict": isKnownDict,
+        "isKnownList": ["true"] * len(list_tokens)
+
+    }
+    print(json["isKnownList"])
+    print(time.time() - t1)
+    return JsonResponse(json)
 
 
 

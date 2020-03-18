@@ -33,5 +33,6 @@ urlpatterns = [
     path('', include('dictionary.urls')),
     path('', include('users.urls')),
     url('index/', TemplateView.as_view(template_name='ReadItEasy/index.html'), name='index'),
+    url('index2/', TemplateView.as_view(template_name='ReadItEasy/index2.html'), name='index2'),
 
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)  # for production
+              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)  # for production

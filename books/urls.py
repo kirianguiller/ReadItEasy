@@ -10,4 +10,7 @@ urlpatterns = [
     path('books/<language>/<id_book>/search/<search>', views.show_search),
     path('ajax_word_data/', views.ajax_word_data),
     path('ajax_change_tokenization/', views.ajax_change_tokenization),
+    path('api/<id_book>/<int:reader_chapter>', views.API_mandarin_chapter),
+
+
 ]

@@ -28,6 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+# with "django-cors-headers" pip module
+CORS_ORIGIN_ALLOW_ALL = True
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'webpack_loader',           # VUEJS
+    'corsheaders', # with "django-cors-headers" pip module
 ]
 
 MIDDLEWARE = [
@@ -51,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # with "django-cors-headers" pip module
 ]
 
 ROOT_URLCONF = 'ReadItEasy.urls'
